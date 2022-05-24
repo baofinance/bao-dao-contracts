@@ -1,4 +1,4 @@
-# curve-dao-contracts/contracts/gauges/wrappers
+# Author: Curve Finance
 
 Wrappers are used to tokenize deposits in first-gen gauges.
 

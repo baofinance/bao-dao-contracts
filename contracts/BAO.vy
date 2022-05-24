@@ -2,7 +2,7 @@
 
 """
 @title BAO Token
-@author BAO Finance
+@author Curve Finance
 @license MIT
 @notice ERC20 with piecewise-linear mining supply.
 @dev Based on the ERC-20 token standard as defined at

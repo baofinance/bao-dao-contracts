@@ -1,6 +1,6 @@
 # @version 0.2.8
 """
-@title Curve LiquidityGaugeV2 Ownerhip Proxy
+@title BAO LiquidityGaugeV2 Ownerhip Proxy
 @author Curve Finance
 @license MIT
 """

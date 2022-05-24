@@ -3,7 +3,7 @@
 @title Tokenized Gauge Wrapper: Unit Protocol Edition
 @author Curve Finance
 @license MIT
-@notice Tokenizes gauge deposits to allow claiming of CRV when
+@notice Tokenizes gauge deposits to allow claiming of BAO when
         deposited as a collateral within the unit.xyz Vault
 """
 

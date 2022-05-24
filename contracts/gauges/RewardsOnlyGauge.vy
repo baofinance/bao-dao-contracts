@@ -3,7 +3,7 @@
 @title Rewards-Only Gauge
 @author Curve Finance
 @license MIT
-@notice Distribution of third-party rewards without CRV
+@notice Distribution of third-party rewards without BAO
 """
 
 from vyper.interfaces import ERC20
