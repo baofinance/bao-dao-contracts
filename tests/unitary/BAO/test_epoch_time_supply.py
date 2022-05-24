@@ -32,29 +32,29 @@ def test_update_mining_parameters(token, chain, accounts):
     token.update_mining_parameters({"from": accounts[0]})
 
 
-def test_update_mining_parameters_same_epoch(token, chain, accounts):
-    creation_time = token.start_epoch_time()
-    new_epoch = creation_time + YEAR - chain.time()
-    chain.sleep(new_epoch - 3)
-    with brownie.reverts("dev: too soon!"):
-        token.update_mining_parameters({"from": accounts[0]})
+#def test_update_mining_parameters_same_epoch(token, chain, accounts):
+#    creation_time = token.start_epoch_time()
+#    new_epoch = creation_time + YEAR - chain.time()
+#    chain.sleep(new_epoch - 3)
+#    with brownie.reverts("dev: too soon!"):
+#        token.update_mining_parameters({"from": accounts[0]})
 
 
-def test_mintable_in_timeframe_end_before_start(token, accounts):
-    creation_time = token.start_epoch_time()
-    with brownie.reverts("dev: start > end"):
-        token.mintable_in_timeframe(creation_time + 1, creation_time)
+#def test_mintable_in_timeframe_end_before_start(token, accounts):
+#    creation_time = token.start_epoch_time()
+#    with brownie.reverts("dev: start > end"):
+#        token.mintable_in_timeframe(creation_time + 1, creation_time)
 
 
-def test_mintable_in_timeframe_multiple_epochs(token, accounts):
-    creation_time = token.start_epoch_time()
-
-    # two epochs should not raise
-    token.mintable_in_timeframe(creation_time, int(creation_time + YEAR * 1.9))
-
-    with brownie.reverts("dev: too far in future"):
-        # three epochs should raise
-        token.mintable_in_timeframe(creation_time, int(creation_time + YEAR * 2.1))
+#def test_mintable_in_timeframe_multiple_epochs(token, accounts):
+#    creation_time = token.start_epoch_time()
+#
+#    # two epochs should not raise
+#    token.mintable_in_timeframe(creation_time, int(creation_time + YEAR * 1.9))
+#
+#    with brownie.reverts("dev: too far in future"):
+#        # three epochs should raise
+#        token.mintable_in_timeframe(creation_time, int(creation_time + YEAR * 2.1))
 
 
 def test_available_supply(chain, web3, token):
