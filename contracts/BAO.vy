@@ -1,7 +1,8 @@
-# @version 0.2.4
+# @version 0.3.3
+
 """
-@title Curve DAO Token
-@author Curve Finance
+@title BAO Token
+@author BAO Finance
 @license MIT
 @notice ERC20 with piecewise-linear mining supply.
 @dev Based on the ERC-20 token standard as defined at
@@ -11,7 +12,6 @@
 from vyper.interfaces import ERC20
 
 implements: ERC20
-
 
 event Transfer:
     _from: indexed(address)
@@ -34,14 +34,13 @@ event SetMinter:
 event SetAdmin:
     admin: address
 
-
-name: public(String[64])
+name: public(String[32])
 symbol: public(String[32])
-decimals: public(uint256)
+decimals: public(uint8)
 
 balanceOf: public(HashMap[address, uint256])
-allowances: HashMap[address, HashMap[address, uint256]]
-total_supply: uint256
+allowance: public(HashMap[address, HashMap[address, uint256]])
+totalSupply: public(uint256)
 
 minter: public(address)
 admin: public(address)
@@ -51,18 +50,15 @@ YEAR: constant(uint256) = 86400 * 365
 
 # Allocation:
 # =========
-# * shareholders - 30%
-# * emplyees - 3%
-# * DAO-controlled reserve - 5%
-# * Early users - 5%
-# == 43% ==
-# left for inflation: 57%
+# * BAO unlocking and migration (Main-net supply + xDAI supply after farms end)
+# == X% ==
+# left for inflation: Y% || **(X + Y = 100%)**
 
 # Supply parameters
-INITIAL_SUPPLY: constant(uint256) = 1_303_030_303
-INITIAL_RATE: constant(uint256) = 274_815_283 * 10 ** 18 / YEAR  # leading to 43% premine
+INITIAL_SUPPLY: constant(uint256) = 1_500_000_000 #test value
+INITIAL_RATE: constant(uint256) = 274_815_283 * 10 ** 18 / YEAR #X% premine test value, think its close to ~49.5% here
 RATE_REDUCTION_TIME: constant(uint256) = YEAR
-RATE_REDUCTION_COEFFICIENT: constant(uint256) = 1189207115002721024  # 2 ** (1/4) * 1e18
+RATE_REDUCTION_COEFFICIENT: constant(uint256) = 1189207115002721024  #2 ** (1/4) * 1e18
 RATE_DENOMINATOR: constant(uint256) = 10 ** 18
 INFLATION_DELAY: constant(uint256) = 86400
 
@@ -73,21 +69,20 @@ rate: public(uint256)
 
 start_epoch_supply: uint256
 
-
 @external
-def __init__(_name: String[64], _symbol: String[32], _decimals: uint256):
+def __init__(_name: String[32], _symbol: String[32], _decimals: uint8):
     """
     @notice Contract constructor
     @param _name Token full name
     @param _symbol Token symbol
     @param _decimals Number of decimals for token
     """
-    init_supply: uint256 = INITIAL_SUPPLY * 10 ** _decimals
+    init_supply: uint256 = INITIAL_SUPPLY * 10 ** convert(_decimals, uint256)
     self.name = _name
     self.symbol = _symbol
     self.decimals = _decimals
     self.balanceOf[msg.sender] = init_supply
-    self.total_supply = init_supply
+    self.totalSupply = init_supply
     self.admin = msg.sender
     log Transfer(ZERO_ADDRESS, msg.sender, init_supply)
 
@@ -198,7 +193,7 @@ def mintable_in_timeframe(start: uint256, end: uint256) -> uint256:
 
     assert end <= current_epoch_time + RATE_REDUCTION_TIME  # dev: too far in future
 
-    for i in range(999):  # Curve will not work in 1000 years. Darn!
+    for i in range(999):  # will not work in 1000 years. Darn!
         if end >= current_epoch_time:
             current_end: uint256 = end
             if current_end > current_epoch_time + RATE_REDUCTION_TIME:
@@ -248,27 +243,6 @@ def set_admin(_admin: address):
 
 
 @external
-@view
-def totalSupply() -> uint256:
-    """
-    @notice Total number of tokens in existence.
-    """
-    return self.total_supply
-
-
-@external
-@view
-def allowance(_owner : address, _spender : address) -> uint256:
-    """
-    @notice Check the amount of tokens that an owner allowed to a spender
-    @param _owner The address which owns the funds
-    @param _spender The address which will spend the funds
-    @return uint256 specifying the amount of tokens still available for the spender
-    """
-    return self.allowances[_owner][_spender]
-
-
-@external
 def transfer(_to : address, _value : uint256) -> bool:
     """
     @notice Transfer `_value` tokens from `msg.sender` to `_to`
@@ -299,7 +273,7 @@ def transferFrom(_from : address, _to : address, _value : uint256) -> bool:
     #       so the following subtraction would revert on insufficient balance
     self.balanceOf[_from] -= _value
     self.balanceOf[_to] += _value
-    self.allowances[_from][msg.sender] -= _value
+    self.allowance[_from][msg.sender] -= _value
     log Transfer(_from, _to, _value)
     return True
 
@@ -315,8 +289,8 @@ def approve(_spender : address, _value : uint256) -> bool:
     @param _value The amount of tokens to be spent
     @return bool success
     """
-    assert _value == 0 or self.allowances[msg.sender][_spender] == 0
-    self.allowances[msg.sender][_spender] = _value
+    assert _value == 0 or self.allowance[msg.sender][_spender] == 0
+    self.allowance[msg.sender][_spender] = _value
     log Approval(msg.sender, _spender, _value)
     return True
 
@@ -336,9 +310,9 @@ def mint(_to: address, _value: uint256) -> bool:
     if block.timestamp >= self.start_epoch_time + RATE_REDUCTION_TIME:
         self._update_mining_parameters()
 
-    _total_supply: uint256 = self.total_supply + _value
+    _total_supply: uint256 = self.totalSupply + _value
     assert _total_supply <= self._available_supply()  # dev: exceeds allowable mint amount
-    self.total_supply = _total_supply
+    self.totalSupply = _total_supply
 
     self.balanceOf[_to] += _value
     log Transfer(ZERO_ADDRESS, _to, _value)
@@ -355,20 +329,7 @@ def burn(_value: uint256) -> bool:
     @return bool success
     """
     self.balanceOf[msg.sender] -= _value
-    self.total_supply -= _value
+    self.totalSupply -= _value
 
     log Transfer(msg.sender, ZERO_ADDRESS, _value)
     return True
-
-
-@external
-def set_name(_name: String[64], _symbol: String[32]):
-    """
-    @notice Change the token name and symbol to `_name` and `_symbol`
-    @dev Only callable by the admin account
-    @param _name New token name
-    @param _symbol New token symbol
-    """
-    assert msg.sender == self.admin, "Only admin is allowed to change name"
-    self.name = _name
-    self.symbol = _symbol

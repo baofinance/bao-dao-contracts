@@ -1,13 +1,5 @@
 import pytest
 from brownie import (
-    BTCBurner,
-    CBurner,
-    ETHBurner,
-    LPBurner,
-    MetaBurner,
-    UnderlyingBurner,
-    USDNBurner,
-    YBurner,
     compile_source,
     convert,
 )
@@ -16,7 +8,7 @@ from brownie_tokens import ERC20
 YEAR = 365 * 86400
 INITIAL_RATE = 274_815_283
 YEAR_1_SUPPLY = INITIAL_RATE * 10 ** 18 // YEAR * YEAR
-INITIAL_SUPPLY = 1_303_030_303
+INITIAL_SUPPLY = 1_500_000_000
 
 
 def approx(a, b, precision=1e-10):
@@ -82,14 +74,14 @@ def receiver(accounts):
 
 
 @pytest.fixture(scope="module")
-def token(ERC20CRV, accounts):
-    yield ERC20CRV.deploy("Curve DAO Token", "CRV", 18, {"from": accounts[0]})
+def token(BAO, accounts):
+    yield BAO.deploy("BAO Token", "BAO", 18, {"from": accounts[0]})
 
 
 @pytest.fixture(scope="module")
 def voting_escrow(VotingEscrow, accounts, token):
     yield VotingEscrow.deploy(
-        token, "Voting-escrowed CRV", "veCRV", "veCRV_0.99", {"from": accounts[0]}
+        token, "Voting-escrowed BAO", "veBAO", "veBAO_0.99", {"from": accounts[0]}
     )
 
 
@@ -101,16 +93,6 @@ def gauge_controller(GaugeController, accounts, token, voting_escrow):
 @pytest.fixture(scope="module")
 def minter(Minter, accounts, gauge_controller, token):
     yield Minter.deploy(token, gauge_controller, {"from": accounts[0]})
-
-
-@pytest.fixture(scope="module")
-def crypto_pool_proxy(alice, CryptoPoolProxy):
-    return CryptoPoolProxy.deploy(alice, alice, alice, {"from": alice})
-
-
-@pytest.fixture(scope="module")
-def pool_proxy(PoolProxy, accounts):
-    yield PoolProxy.deploy(accounts[0], accounts[0], accounts[0], {"from": accounts[0]})
 
 
 @pytest.fixture(scope="module")
@@ -249,30 +231,6 @@ def vesting_simple(VestingEscrowSimple, accounts, vesting_factory, coin_a, start
     yield VestingEscrowSimple.at(tx.new_contracts[0])
 
 
-# parametrized burner fixture
-
-
-@pytest.fixture(
-    scope="module",
-    params=[
-        BTCBurner,
-        CBurner,
-        ETHBurner,
-        LPBurner,
-        MetaBurner,
-        UnderlyingBurner,
-        USDNBurner,
-        YBurner,
-    ],
-)
-def burner(alice, bob, receiver, pool_proxy, request):
-    Burner = request.param
-    args = (pool_proxy, receiver, receiver, alice, bob, {"from": alice})
-    idx = len(Burner.deploy.abi["inputs"]) + 1
-
-    yield Burner.deploy(*args[-idx:])
-
-
 # testing contracts
 
 
@@ -304,18 +262,6 @@ def pool(CurvePool, accounts, mock_lp_token, coin_a, coin_b):
     mock_lp_token.set_minter(curve_pool, {"from": accounts[0]})
 
     yield curve_pool
-
-
-@pytest.fixture(scope="module")
-def fee_distributor(FeeDistributor, voting_escrow, accounts, coin_a, chain):
-    def f(t=None):
-        if not t:
-            t = chain.time()
-        return FeeDistributor.deploy(
-            voting_escrow, t, coin_a, accounts[0], accounts[0], {"from": accounts[0]}
-        )
-
-    yield f
 
 
 @pytest.fixture(scope="module")
