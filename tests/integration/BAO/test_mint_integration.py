@@ -26,15 +26,15 @@ def test_mint(accounts, chain, token, duration):
     assert token.totalSupply() == initial_supply + amount
 
 
-#@given(duration=strategy("uint", min_value=86500, max_value=YEAR))
-#def test_overmint(accounts, chain, token, duration):
-#    token.set_minter(accounts[0], {"from": accounts[0]})
-#    creation_time = token.start_epoch_time()
-#    rate = token.rate()
-#    chain.sleep(duration)
-#
-#    with brownie.reverts("dev: exceeds allowable mint amount"):
-#        token.mint(accounts[1], (chain.time() - creation_time + 2) * rate, {"from": accounts[0]})
+@given(duration=strategy("uint", min_value=86500, max_value=YEAR))
+def test_overmint(accounts, chain, token, duration):
+    token.set_minter(accounts[0], {"from": accounts[0]})
+    creation_time = token.start_epoch_time()
+    rate = token.rate()
+    chain.sleep(duration)
+
+    with brownie.reverts():
+        token.mint(accounts[1], (chain.time() - creation_time + 2) * rate, {"from": accounts[0]})
 
 
 @given(durations=strategy("uint[5]", min_value=YEAR * 0.33, max_value=YEAR * 0.9))

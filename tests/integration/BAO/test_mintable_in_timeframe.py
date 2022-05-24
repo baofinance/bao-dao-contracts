@@ -70,5 +70,5 @@ def test_available_supply(chain, web3, token, duration):
     chain.sleep(duration)
     chain.mine()
 
-    expected = initial_supply + (web3.eth.getBlock("latest")["timestamp"] - creation_time) * rate
+    expected = initial_supply + (web3.eth.get_block("latest")["timestamp"] - creation_time) * rate
     assert token.available_supply() == expected

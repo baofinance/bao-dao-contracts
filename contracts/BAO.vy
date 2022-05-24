@@ -52,7 +52,7 @@ YEAR: constant(uint256) = 86400 * 365
 # =========
 # * BAO unlocking and migration (Main-net supply + xDAI supply after farms end)
 # == X% ==
-# left for inflation: Y% || **(X + Y = 100%)**
+# supply left for inflation: Y% || **(X + Y = 100%)**
 
 # Supply parameters
 INITIAL_SUPPLY: constant(uint256) = 1_500_000_000 #test value
@@ -328,8 +328,7 @@ def burn(_value: uint256) -> bool:
     @param _value The amount that will be burned
     @return bool success
     """
-    self.balanceOf[msg.sender] -= _value
     self.totalSupply -= _value
-
+    self.balanceOf[msg.sender] -= _value
     log Transfer(msg.sender, ZERO_ADDRESS, _value)
     return True

@@ -53,10 +53,10 @@ def test_voting_powers(web3, chain, accounts, token, voting_escrow):
 
     chain.sleep(H)
 
-    stages["before_deposits"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["before_deposits"] = (web3.eth.block_number, chain[-1].timestamp)
 
     voting_escrow.create_lock(amount, chain[-1].timestamp + WEEK, {"from": alice})
-    stages["alice_deposit"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["alice_deposit"] = (web3.eth.block_number, chain[-1].timestamp)
 
     chain.sleep(H)
     chain.mine()
@@ -67,7 +67,7 @@ def test_voting_powers(web3, chain, accounts, token, voting_escrow):
     t0 = chain[-1].timestamp
 
     stages["alice_in_0"] = []
-    stages["alice_in_0"].append((web3.eth.blockNumber, chain[-1].timestamp))
+    stages["alice_in_0"].append((web3.eth.block_number, chain[-1].timestamp))
     for i in range(7):
         for _ in range(24):
             chain.sleep(H)
@@ -84,13 +84,13 @@ def test_voting_powers(web3, chain, accounts, token, voting_escrow):
             TOL,
         )
         assert voting_escrow.balanceOf(bob) == 0
-        stages["alice_in_0"].append((web3.eth.blockNumber, chain[-1].timestamp))
+        stages["alice_in_0"].append((web3.eth.block_number, chain[-1].timestamp))
 
     chain.sleep(H)
 
     assert voting_escrow.balanceOf(alice) == 0
     voting_escrow.withdraw({"from": alice})
-    stages["alice_withdraw"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["alice_withdraw"] = (web3.eth.block_number, chain[-1].timestamp)
     assert voting_escrow.totalSupply() == 0
     assert voting_escrow.balanceOf(alice) == 0
     assert voting_escrow.balanceOf(bob) == 0
@@ -103,14 +103,14 @@ def test_voting_powers(web3, chain, accounts, token, voting_escrow):
     chain.mine()
 
     voting_escrow.create_lock(amount, chain[-1].timestamp + 2 * WEEK, {"from": alice})
-    stages["alice_deposit_2"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["alice_deposit_2"] = (web3.eth.block_number, chain[-1].timestamp)
 
     assert approx(voting_escrow.totalSupply(), amount // MAXTIME * 2 * WEEK, TOL)
     assert approx(voting_escrow.balanceOf(alice), amount // MAXTIME * 2 * WEEK, TOL)
     assert voting_escrow.balanceOf(bob) == 0
 
     voting_escrow.create_lock(amount, chain[-1].timestamp + WEEK, {"from": bob})
-    stages["bob_deposit_2"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["bob_deposit_2"] = (web3.eth.block_number, chain[-1].timestamp)
 
     assert approx(voting_escrow.totalSupply(), amount // MAXTIME * 3 * WEEK, TOL)
     assert approx(voting_escrow.balanceOf(alice), amount // MAXTIME * 2 * WEEK, TOL)
@@ -134,14 +134,14 @@ def test_voting_powers(web3, chain, accounts, token, voting_escrow):
         assert w_total == w_alice + w_bob
         assert approx(w_alice, amount // MAXTIME * max(2 * WEEK - dt, 0), TOL)
         assert approx(w_bob, amount // MAXTIME * max(WEEK - dt, 0), TOL)
-        stages["alice_bob_in_2"].append((web3.eth.blockNumber, chain[-1].timestamp))
+        stages["alice_bob_in_2"].append((web3.eth.block_number, chain[-1].timestamp))
 
     chain.sleep(H)
     chain.mine()
 
     voting_escrow.withdraw({"from": bob})
     t0 = chain[-1].timestamp
-    stages["bob_withdraw_1"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["bob_withdraw_1"] = (web3.eth.block_number, chain[-1].timestamp)
     w_total = voting_escrow.totalSupply()
     w_alice = voting_escrow.balanceOf(alice)
     assert w_alice == w_total
@@ -162,16 +162,16 @@ def test_voting_powers(web3, chain, accounts, token, voting_escrow):
         assert w_total == w_alice
         assert approx(w_total, amount // MAXTIME * max(WEEK - dt - 2 * H, 0), TOL)
         assert voting_escrow.balanceOf(bob) == 0
-        stages["alice_in_2"].append((web3.eth.blockNumber, chain[-1].timestamp))
+        stages["alice_in_2"].append((web3.eth.block_number, chain[-1].timestamp))
 
     voting_escrow.withdraw({"from": alice})
-    stages["alice_withdraw_2"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["alice_withdraw_2"] = (web3.eth.block_number, chain[-1].timestamp)
 
     chain.sleep(H)
     chain.mine()
 
     voting_escrow.withdraw({"from": bob})
-    stages["bob_withdraw_2"] = (web3.eth.blockNumber, chain[-1].timestamp)
+    stages["bob_withdraw_2"] = (web3.eth.block_number, chain[-1].timestamp)
 
     assert voting_escrow.totalSupply() == 0
     assert voting_escrow.balanceOf(alice) == 0
