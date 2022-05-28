@@ -1,5 +1,7 @@
 import pytest
 from brownie import (
+    BaseBurner,
+    DaiUnderlyingBurner,
     compile_source,
     convert,
 )
@@ -231,6 +233,24 @@ def vesting_simple(VestingEscrowSimple, accounts, vesting_factory, coin_a, start
     yield VestingEscrowSimple.at(tx.new_contracts[0])
 
 
+# parametrized burner fixture
+
+
+@pytest.fixture(
+    scope="module",
+    params=[
+        BaseBurner,
+        DaiUnderlyingBurner,
+    ],
+)
+def burner(alice, bob, receiver, pool_proxy, request):
+    Burner = request.param
+    args = (pool_proxy, receiver, receiver, alice, bob, {"from": alice})
+    idx = len(Burner.deploy.abi["inputs"]) + 1
+
+    yield Burner.deploy(*args[-idx:])
+
+
 # testing contracts
 
 
@@ -262,6 +282,18 @@ def pool(CurvePool, accounts, mock_lp_token, coin_a, coin_b):
     mock_lp_token.set_minter(curve_pool, {"from": accounts[0]})
 
     yield curve_pool
+
+
+@pytest.fixture(scope="module")
+def fee_distributor(FeeDistributor, voting_escrow, accounts, coin_a, chain):
+    def f(t=None):
+        if not t:
+            t = chain.time()
+        return FeeDistributor.deploy(
+            voting_escrow, t, coin_a, accounts[0], accounts[0], {"from": accounts[0]}
+        )
+
+    yield f
 
 
 @pytest.fixture(scope="module")

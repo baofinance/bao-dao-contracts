@@ -1,20 +1,25 @@
 # @version 0.3.3
 """
-@title Uniswap v2 Burner
-@notice Swaps coins to DAI using Uniswap or Sushi, and transfers to `UnderlyingBurner`
+@title DAI Underlying Burner
+@notice Converts underlying coins to DAI and transfers to fee distributor
 """
 
 from vyper.interfaces import ERC20
 
+interface RegistrySwap:
+    def exchange_with_best_rate(
+        _from: address,
+        _to: address,
+        _amount: uint256,
+        _expected: uint256,
+    ) -> uint256: payable
 
-WETH: constant(address) = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+interface AddressProvider:
+    def get_address(_id: uint256) -> address: view
+
+ADDRESS_PROVIDER: constant(address) = 0x0000000022D53366457F9d5E68Ec105046FC4383
+
 DAI: constant(address) = 0x6B175474E89094C44Da98b954EedeAC495271d0F
-
-ROUTERS: constant(address[2]) = [
-    0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D,  # uniswap
-    0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F   # sushi
-]
-
 
 is_approved: HashMap[address, HashMap[address, bool]]
 
@@ -32,9 +37,9 @@ future_emergency_owner: public(address)
 def __init__(_receiver: address, _recovery: address, _owner: address, _emergency_owner: address):
     """
     @notice Contract constructor
-    @param _receiver Address that converted tokens are transferred to.
+    @param _receiver Address that converted tokens are transferred to. #FEE DISTRIBUTOR
                      Should be set to an `UnderlyingBurner` deployment.
-    @param _recovery Address that tokens are transferred to during an
+    @param _recovery Address that tokens are transferred to during an #EMERGENCY DAO MULTI-SIG ADDY FOR THESE
                      emergency token recovery.
     @param _owner Owner address. Can kill the contract, recover tokens
                   and modify the recovery address.
@@ -46,12 +51,29 @@ def __init__(_receiver: address, _recovery: address, _owner: address, _emergency
     self.owner = _owner
     self.emergency_owner = _emergency_owner
 
+    # infinite approval for DAI
+    response: Bytes[32] = raw_call(
+            DAI,
+            concat(
+                method_id("approve(address,uint256)"),
+                convert(DAI, bytes32),
+                convert(MAX_UINT256, bytes32),
+            ),
+            max_outsize=32,
+        )
+    
+    if len(response) != 0:
+        assert convert(response, bool)
+        
 
+
+@payable
 @external
 def burn(_coin: address) -> bool:
     """
-    @notice Receive `_coin` and swap it for DAI using Uniswap or Sushi
-    @param _coin Address of the coin being converted
+    @notice Receive `_coin` and swap for DAI, if not DAI, and the swap is best done on curve for the given input asset
+                    otherwise use Uniswap Burner
+    @param _coin Address of the coin being received
     @return bool success
     """
     assert not self.is_killed  # dev: is killed
@@ -72,65 +94,44 @@ def burn(_coin: address) -> bool:
         if len(response) != 0:
             assert convert(response, bool)
 
-    # get actual balance in case of transfer fee or pre-existing balance
-    amount = ERC20(_coin).balanceOf(self)
+    # if not DAI, swap it for DAI
+    if _coin != DAI:
+        registry_swap: address = AddressProvider(ADDRESS_PROVIDER).get_address(2)
 
-    best_expected: uint256 = 0
-    router: address = ZERO_ADDRESS
+        if not self.is_approved[registry_swap][_coin]:
+            response: Bytes[32] = raw_call(
+                _coin,
+                concat(
+                    method_id("approve(address,uint256)"),
+                    convert(registry_swap, bytes32),
+                    convert(MAX_UINT256, bytes32),
+                ),
+                max_outsize=32,
+            )
+            if len(response) != 0:
+                assert convert(response, bool)
+            self.is_approved[registry_swap][_coin] = True
 
-    # check the rates on uniswap and sushi to see which is the better option
-    # vyper doesn't support dynamic arrays, so we build the calldata manually
-    for addr in ROUTERS:
-        response: Bytes[128] = raw_call(
-            addr,
-            concat(
-                method_id("getAmountsOut(uint256,address[])"),
-                convert(amount, bytes32),
-                convert(64, bytes32),
-                convert(3, bytes32),
-                convert(_coin, bytes32),
-                convert(WETH, bytes32),
-                convert(DAI, bytes32),
-            ),
-            max_outsize=128
-        )
-        expected: uint256 = convert(slice(response, 96, 32), uint256)
-        if expected > best_expected:
-            best_expected = expected
-            router = addr
+        # get actual balance in case of transfer fee or pre-existing balance
+        amount = ERC20(_coin).balanceOf(self)
+        if amount != 0:
+            RegistrySwap(registry_swap).exchange_with_best_rate(_coin, DAI, amount, 0)
 
-    # make sure the router is approved to transfer the coin
-    if not self.is_approved[router][_coin]:
-        response: Bytes[32] = raw_call(
-            _coin,
-            concat(
-                method_id("approve(address,uint256)"),
-                convert(router, bytes32),
-                convert(MAX_UINT256, bytes32),
-            ),
-            max_outsize=32,
-        )
-        if len(response) != 0:
-            assert convert(response, bool)
-        self.is_approved[router][_coin] = True
+    return True
 
-    # swap for DAI on whichever of uniswap/sushi gives a better rate
-    # vyper doesn't support dynamic arrays, so we build the calldata manually
-    raw_call(
-        router,
-        concat(
-            method_id("swapExactTokensForTokens(uint256,uint256,address[],address,uint256)"),
-            convert(amount, bytes32),           # swap amount
-            EMPTY_BYTES32,                      # min expected
-            convert(160, bytes32),              # offset pointer to path array
-            convert(self.receiver, bytes32),    # receiver of the swap
-            convert(block.timestamp, bytes32),  # swap deadline
-            convert(3, bytes32),                # path length
-            convert(_coin, bytes32),            # input token
-            convert(WETH, bytes32),             # weth (intermediate swap)
-            convert(DAI, bytes32),              # DAI (final output)
-        )
-    )
+
+@external
+def execute() -> bool:
+    """
+    @notice transfer DAI to the fee distributor
+    @return bool success
+    """
+    assert not self.is_killed  # dev: is killed
+
+    amount: uint256 = ERC20(DAI).balanceOf(self)
+
+    if amount != 0:
+        ERC20(DAI).transfer(self.receiver, amount) #transfer DAI to fee distributor
 
     return True
 
