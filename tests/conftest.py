@@ -234,7 +234,7 @@ def vesting_simple(VestingEscrowSimple, accounts, vesting_factory, coin_a, start
 
 
 # parametrized burner fixture
-
+# NEEDS MODIFICATION USING OUR FEE CONTRACT INSTEAD OF CURVE POOL_PROXY
 
 @pytest.fixture(
     scope="module",
