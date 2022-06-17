@@ -1,27 +1,18 @@
 # @version 0.3.3
 """
-@title  Underlying Burner
+@title  Base Burner
 @notice Converts underlying coins to baoUSD and transfers to fee distributor
 """
 
 from vyper.interfaces import ERC20
 
-interface RegistrySwap:
-    def exchange_with_best_rate(
-        _from: address,
-        _to: address,
-        _amount: uint256,
-        _expected: uint256,
-    ) -> uint256: payable
-
-interface AddressProvider:
-    def get_address(_id: uint256) -> address: view
-
-ADDRESS_PROVIDER: constant(address) = 0x0000000022D53366457F9d5E68Ec105046FC4383
+interface Stabilizer:
+    def buy(amount: uint256): nonpayable
 
 baoUSD: constant(address) = 0x7945b0A6674b175695e5d1D08aE1e6F13744Abb0
+ballast: constant(address) = 0x720282BB7e721634c95F0933636DE3171dc405de
 
-is_approved: HashMap[address, HashMap[address, bool]]
+is_approved: HashMap[address, bool]
 
 receiver: public(address)
 recovery: public(address)
@@ -56,7 +47,7 @@ def __init__(_receiver: address, _recovery: address, _owner: address, _emergency
             baoUSD,
             concat(
                 method_id("approve(address,uint256)"),
-                convert(baoUSD, bytes32),
+                convert(ballast, bytes32),
                 convert(MAX_UINT256, bytes32),
             ),
             max_outsize=32,
@@ -66,13 +57,11 @@ def __init__(_receiver: address, _recovery: address, _owner: address, _emergency
         assert convert(response, bool)
         
 
-
 @payable
 @external
 def burn(_coin: address) -> bool:
     """
-    @notice Receive `_coin` and swap for baoUSD, if not baoUSD, and the swap is best done on curve for the given input asset
-                    otherwise use Uniswap Burner
+    @notice Receive `_coin` and if not already baoUSD, swap for baoUSD using ballast
     @param _coin Address of the coin being received
     @return bool success
     """
@@ -94,28 +83,26 @@ def burn(_coin: address) -> bool:
         if len(response) != 0:
             assert convert(response, bool)
 
-    # if not baoUSD, swap it for baoUSD
+    # if not baoUSD, swap it for baoUSD using the ballast
     if _coin != baoUSD:
-        registry_swap: address = AddressProvider(ADDRESS_PROVIDER).get_address(2)
-
-        if not self.is_approved[registry_swap][_coin]:
+        if not self.is_approved[_coin]:
             response: Bytes[32] = raw_call(
                 _coin,
                 concat(
                     method_id("approve(address,uint256)"),
-                    convert(registry_swap, bytes32),
+                    convert(ballast, bytes32),
                     convert(MAX_UINT256, bytes32),
                 ),
                 max_outsize=32,
             )
             if len(response) != 0:
                 assert convert(response, bool)
-            self.is_approved[registry_swap][_coin] = True
+            self.is_approved[_coin] = True
 
         # get actual balance in case of transfer fee or pre-existing balance
         amount = ERC20(_coin).balanceOf(self)
         if amount != 0:
-            RegistrySwap(registry_swap).exchange_with_best_rate(_coin, baoUSD, amount, 0)
+            Stabilizer(ballast).buy(amount)
 
     return True
 
