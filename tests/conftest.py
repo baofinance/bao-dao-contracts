@@ -1,7 +1,6 @@
 import pytest
 from brownie import (
     BaseBurner,
-    DaiUnderlyingBurner,
     compile_source,
     convert,
 )
@@ -232,6 +231,16 @@ def vesting_simple(VestingEscrowSimple, accounts, vesting_factory, coin_a, start
     )
     yield VestingEscrowSimple.at(tx.new_contracts[0])
 
+# Bao Markets fixtures
+
+@pytest.fixture(scope="module")
+def feeToken(Synth, accounts):
+    yield Synth.deploy("BAO USD", "baoUSD", 18, {"from": accounts[0]})
+    
+@pytest.fixture(scope="module")
+def Fed(Fed, accounts, feeToken):
+    yield Fed.deploy(feeToken, {"from": accounts[0]})
+
 
 # parametrized burner fixture
 # NEEDS MODIFICATION USING OUR FEE CONTRACT INSTEAD OF CURVE POOL_PROXY
@@ -240,12 +249,11 @@ def vesting_simple(VestingEscrowSimple, accounts, vesting_factory, coin_a, start
     scope="module",
     params=[
         BaseBurner,
-        DaiUnderlyingBurner,
     ],
 )
-def burner(alice, bob, receiver, pool_proxy, request):
+def burner(alice, bob, receiver, Fed, request):
     Burner = request.param
-    args = (pool_proxy, receiver, receiver, alice, bob, {"from": alice})
+    args = (Fed, receiver, receiver, alice, bob, {"from": alice})
     idx = len(Burner.deploy.abi["inputs"]) + 1
 
     yield Burner.deploy(*args[-idx:])
