@@ -11,8 +11,6 @@ from brownie import (
 BURNERS = {
     BaseBurner: [
         "0x6B175474E89094C44Da98b954EedeAC495271d0F",  # DAI
-        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",  # USDC
-        "0xdAC17F958D2ee523a2206206994597C13D831ec7",  # USDT
         "0x5ee08f40b637417bcC9d2C51B62F4820ec9cF5D8",  # bSTBL
     ],
 }
@@ -21,11 +19,7 @@ BURNERS = {
 def test_fee_distribution():
 
     alice = accounts[0]
-    lp_tripool = Contract("0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490")
-
-    # GET LIST OF INCENTIVIZED BAO POOLS
-    provider = Contract("0x0000000022D53366457F9d5E68Ec105046FC4383")
-    registry = Contract(provider.get_registry())
+    BaoUSD = Contract("0x7945b0A6674b175695e5d1D08aE1e6F13744Abb0")
 
     chain.sleep(86400 * 3)
 
@@ -74,4 +68,4 @@ def test_fee_distribution():
     # verify that fee distributor has received 3CRV
     amount = lp_tripool.balanceOf(distributor)
     assert amount > 0
-    print(f"Success! bSTBL balance in distributor: {amount/1e18:.4f}")
+    print(f"Success! BaoUSD balance in distributor: {amount/1e18:.4f}")
