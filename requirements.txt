@@ -41,7 +41,7 @@ black==21.11b1
     # via
     #   -r requirements.in
     #   eth-brownie
-brownie-token-tester==0.3.2
+brownie-token-tester==0.2.2
     # via -r requirements.in
 cached-property==1.5.2
     # via eth-brownie
