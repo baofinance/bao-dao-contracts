@@ -100,18 +100,15 @@ def minter(Minter, accounts, gauge_controller, token):
 def gauge_proxy(GaugeProxy, alice, bob):
     yield GaugeProxy.deploy(alice, bob, {"from": alice})
 
-
 @pytest.fixture(scope="module")
 def coin_reward():
     yield ERC20("YFIIIIII Funance", "YFIIIIII", 18)
-
 
 @pytest.fixture(scope="module")
 def reward_contract(CurveRewards, mock_lp_token, accounts, coin_reward):
     contract = CurveRewards.deploy(mock_lp_token, coin_reward, {"from": accounts[0]})
     contract.setRewardDistribution(accounts[0], {"from": accounts[0]})
     yield contract
-
 
 @pytest.fixture(scope="module")
 def liquidity_gauge(LiquidityGauge, accounts, mock_lp_token, minter):
@@ -148,7 +145,6 @@ def gauge_wrapper(LiquidityGaugeWrapper, accounts, liquidity_gauge):
         "Tokenized Gauge", "TG", liquidity_gauge, accounts[0], {"from": accounts[0]}
     )
 
-
 @pytest.fixture(scope="module")
 def liquidity_gauge_reward(
     LiquidityGaugeReward, accounts, mock_lp_token, minter, reward_contract, coin_reward
@@ -161,7 +157,6 @@ def liquidity_gauge_reward(
         accounts[0],
         {"from": accounts[0]},
     )
-
 
 @pytest.fixture(scope="module")
 def reward_gauge_wrapper(LiquidityGaugeRewardWrapper, accounts, liquidity_gauge_reward):
@@ -236,14 +231,9 @@ def vesting_simple(VestingEscrowSimple, accounts, vesting_factory, coin_a, start
 @pytest.fixture(scope="module")
 def feeToken(Synth, accounts):
     yield Synth.deploy("BAO USD", "baoUSD", 18, {"from": accounts[0]})
-    
-@pytest.fixture(scope="module")
-def Fed(Fed, accounts, feeToken):
-    yield Fed.deploy(feeToken, {"from": accounts[0]})
 
 
-# parametrized burner fixture
-# NEEDS MODIFICATION USING OUR FEE CONTRACT INSTEAD OF CURVE POOL_PROXY
+# burner fixture
 
 @pytest.fixture(
     scope="module",
