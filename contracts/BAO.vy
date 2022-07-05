@@ -30,6 +30,7 @@ event UpdateMiningParameters:
 
 event SetMinter:
     minter: address
+    swapper: address
 
 event SetAdmin:
     admin: address
@@ -43,6 +44,7 @@ allowance: public(HashMap[address, HashMap[address, uint256]])
 totalSupply: public(uint256)
 
 minter: public(address)
+swapper: public(address)
 admin: public(address)
 
 # General constants
@@ -55,7 +57,7 @@ YEAR: constant(uint256) = 86400 * 365
 # supply left for inflation: Y% || **(X + Y = 100%)**
 
 # Supply parameters
-INITIAL_SUPPLY: constant(uint256) = 1_500_000_000 #test value
+INITIAL_SUPPLY_CAP: constant(uint256) = 1_500_000_000 #test value
 INITIAL_RATE: constant(uint256) = 274_815_283 * 10 ** 18 / YEAR #X% premine test value, think its close to ~49.5% here
 RATE_REDUCTION_TIME: constant(uint256) = YEAR
 RATE_REDUCTION_COEFFICIENT: constant(uint256) = 1189207115002721024  #2 ** (1/4) * 1e18
@@ -77,7 +79,7 @@ def __init__(_name: String[32], _symbol: String[32], _decimals: uint8):
     @param _symbol Token symbol
     @param _decimals Number of decimals for token
     """
-    init_supply: uint256 = INITIAL_SUPPLY * 10 ** convert(_decimals, uint256)
+    init_supply: uint256 = INITIAL_SUPPLY_CAP * 10 ** convert(_decimals, uint256)
     self.name = _name
     self.symbol = _symbol
     self.decimals = _decimals
@@ -218,16 +220,19 @@ def mintable_in_timeframe(start: uint256, end: uint256) -> uint256:
 
 
 @external
-def set_minter(_minter: address):
+def set_minters(_minter: address, _swapper: address):
     """
-    @notice Set the minter address
-    @dev Only callable once, when minter has not yet been set
+    @notice Set the minter address and swap migration address
+    @dev Only callable once, when the minter and swapper have not yet been set
     @param _minter Address of the minter
+    @param _swapper Address of the swapper
     """
     assert msg.sender == self.admin  # dev: admin only
     assert self.minter == ZERO_ADDRESS  # dev: can set the minter only once, at creation
+    assert self.swapper == ZERO_ADDRESS # dev: can set the swap migration contract only once, at creation
     self.minter = _minter
-    log SetMinter(_minter)
+    self.swapper = _swapper
+    log SetMinter(_minter, _swapper)
 
 
 @external
@@ -304,7 +309,7 @@ def mint(_to: address, _value: uint256) -> bool:
     @param _value The amount that will be created
     @return bool success
     """
-    assert msg.sender == self.minter  # dev: minter only
+    assert (msg.sender == self.minter or msg.sender == self.swapper)  # dev: minter and swapper only
     assert _to != ZERO_ADDRESS  # dev: zero address
 
     if block.timestamp >= self.start_epoch_time + RATE_REDUCTION_TIME:
