@@ -223,7 +223,7 @@ def mintable_in_timeframe(start: uint256, end: uint256) -> uint256:
 def set_minters(_minter: address, _swapper: address):
     """
     @notice Set the minter address and swap migration address
-    @dev Only callable once, when the minter and swapper have not yet been set
+    @dev Only callable once, when the minter and swapper contract have not yet been set
     @param _minter Address of the minter
     @param _swapper Address of the swapper
     """
