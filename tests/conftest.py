@@ -75,16 +75,20 @@ def receiver(accounts):
 
 
 @pytest.fixture(scope="module")
-def token(BAO, accounts):
-    yield BAO.deploy("BAO Token", "BAO", 18, {"from": accounts[0]})
+def token(ERC20BAO, accounts):
+    yield ERC20BAO.deploy("BAO Token", "BAO", 18, {"from": accounts[0]})
 
 
 @pytest.fixture(scope="module")
-def voting_escrow(VotingEscrow, accounts, token):
+def voting_escrow(VotingEscrow, accounts, token, distribution):
     yield VotingEscrow.deploy(
-        token, "Voting-escrowed BAO", "veBAO", "veBAO_0.99", {"from": accounts[0]}
+        token, distribution, "Voting-escrowed BAO", "veBAO", "veBAO_0.99", {"from": accounts[0]}
     )
 
+
+#@pytest.fixture(scope="module")
+#def distribution(BaoDistribution, token, voting_escrow, accounts):
+#    yield BaoDistribution.deploy(token, voting_escrow, merkleRoot, treasury {"from": accounts[0]})
 
 @pytest.fixture(scope="module")
 def gauge_controller(GaugeController, accounts, token, voting_escrow):

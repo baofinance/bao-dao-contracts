@@ -56,6 +56,7 @@ DEPOSIT_FOR_TYPE: constant(int128) = 0
 CREATE_LOCK_TYPE: constant(int128) = 1
 INCREASE_LOCK_AMOUNT: constant(int128) = 2
 INCREASE_UNLOCK_TIME: constant(int128) = 3
+CREATE_LOCK_FOR_TYPE: constant(int128) = 4
 
 
 event CommitOwnership:
@@ -109,22 +110,25 @@ decimals: public(uint256)
 # The goal is to prevent tokenizing the escrow
 future_smart_wallet_checker: public(address)
 smart_wallet_checker: public(address)
+distr_contract: public(address)
 
 admin: public(address)  # Can and will be a smart contract
 future_admin: public(address)
 
 
 @external
-def __init__(token_addr: address, _name: String[64], _symbol: String[32], _version: String[32]):
+def __init__(token_addr: address, distr_contract_addr: address, _name: String[64], _symbol: String[32], _version: String[32]):
     """
     @notice Contract constructor
     @param token_addr `ERC20BAO` token address
+    @param distr_contract_addr `BaoDistribution.sol` contract address
     @param _name Token name
     @param _symbol Token symbol
     @param _version Contract version - required for Aragon compatibility
     """
     self.admin = msg.sender
     self.token = token_addr
+    self.distr_contract = distr_contract_addr
     self.point_history[0].blk = block.number
     self.point_history[0].ts = block.timestamp
     self.controller = msg.sender
@@ -193,6 +197,15 @@ def assert_not_contract(addr: address):
             if SmartWalletChecker(checker).check(addr):
                 return
         raise "Smart contract depositors not allowed"
+
+@internal
+def assert_distr_contract(addr: address):
+    """
+    @notice Check if the call is from a whitelisted smart contract, revert if not
+    @param addr Address to be checked
+    """
+    if addr != self.distr_contract:
+        raise "Only the Distribution contract is allowed"
 
 
 @external
@@ -425,6 +438,27 @@ def create_lock(_value: uint256, _unlock_time: uint256):
     assert unlock_time <= block.timestamp + MAXTIME, "Voting lock can be 4 years max"
 
     self._deposit_for(msg.sender, _value, unlock_time, _locked, CREATE_LOCK_TYPE)
+
+
+@external
+@nonreentrant('lock')
+def create_lock_for(_to: address, _value: uint256, _unlock_time: uint256):
+    """
+    @notice Deposit `_value` tokens for `_to` address and lock until `_unlock_time`
+    @param _value Amount to deposit
+    @param _unlock_time Epoch time when tokens unlock, rounded down to whole weeks
+    """
+    self.assert_distr_contract(msg.sender)
+    unlock_time: uint256 = (_unlock_time / WEEK) * WEEK  # Locktime is rounded down to weeks
+    _locked: LockedBalance = self.locked[_to]
+
+    assert _value > 0  # dev: need non-zero value
+    assert _locked.amount == 0, "Withdraw old tokens first"
+    assert unlock_time > block.timestamp, "Can only lock until time in the future"
+    assert unlock_time <= block.timestamp + MAXTIME, "Voting lock can be 4 years max"
+
+    self._deposit_for(_to, _value, unlock_time, _locked, CREATE_LOCK_FOR_TYPE)
+
 
 
 @external
