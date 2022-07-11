@@ -110,6 +110,8 @@ decimals: public(uint256)
 # The goal is to prevent tokenizing the escrow
 future_smart_wallet_checker: public(address)
 smart_wallet_checker: public(address)
+#BAO distribution
+future_distr_contract: public(address)
 distr_contract: public(address)
 
 admin: public(address)  # Can and will be a smart contract
@@ -117,18 +119,16 @@ future_admin: public(address)
 
 
 @external
-def __init__(token_addr: address, distr_contract_addr: address, _name: String[64], _symbol: String[32], _version: String[32]):
+def __init__(token_addr: address, _name: String[64], _symbol: String[32], _version: String[32]):
     """
     @notice Contract constructor
     @param token_addr `ERC20BAO` token address
-    @param distr_contract_addr `BaoDistribution.sol` contract address
     @param _name Token name
     @param _symbol Token symbol
     @param _version Contract version - required for Aragon compatibility
     """
     self.admin = msg.sender
     self.token = token_addr
-    self.distr_contract = distr_contract_addr
     self.point_history[0].blk = block.number
     self.point_history[0].ts = block.timestamp
     self.controller = msg.sender
@@ -183,6 +183,24 @@ def apply_smart_wallet_checker():
     """
     assert msg.sender == self.admin
     self.smart_wallet_checker = self.future_smart_wallet_checker
+
+
+@external
+def commit_distr_contract(addr: address):
+    """
+    @notice Commit distribution contract
+    """
+    assert msg.sender == self.admin
+    self.future_distr_contract = addr
+
+
+@external
+def apply_distr_contract():
+    """
+    @notice Apply distribution contract
+    """
+    assert msg.sender == self.admin
+    self.distr_contract = self.future_distr_contract
 
 
 @internal

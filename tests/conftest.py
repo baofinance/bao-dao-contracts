@@ -80,9 +80,9 @@ def token(ERC20BAO, accounts):
 
 
 @pytest.fixture(scope="module")
-def voting_escrow(VotingEscrow, accounts, token, distribution):
+def voting_escrow(VotingEscrow, accounts, token):
     yield VotingEscrow.deploy(
-        token, distribution, "Voting-escrowed BAO", "veBAO", "veBAO_0.99", {"from": accounts[0]}
+        token, "Voting-escrowed BAO", "veBAO", "veBAO_0.99", {"from": accounts[0]}
     )
 
 
