@@ -1,4 +1,5 @@
 import pytest
+from web3 import Web3
 from brownie import (
     BaseBurner,
     compile_source,
@@ -27,6 +28,9 @@ def pack_values(values):
 @pytest.fixture(autouse=True)
 def isolation_setup(fn_isolation):
     pass
+
+
+merkle_root = Web3.toBytes(0xe8e5ee10e72c2e561fb3c63d5d87972fd105b0c935acfd5b5ab9e504484b4530)
 
 
 # helper functions as fixtures
@@ -86,9 +90,11 @@ def voting_escrow(VotingEscrow, accounts, token):
     )
 
 
-#@pytest.fixture(scope="module")
-#def distribution(BaoDistribution, token, voting_escrow, accounts):
-#    yield BaoDistribution.deploy(token, voting_escrow, merkleRoot, treasury {"from": accounts[0]})
+@pytest.fixture(scope="module")
+def bao_distribution(BaoDistribution, token, voting_escrow, alice, accounts):
+    yield BaoDistribution.deploy(token, voting_escrow, merkle_root, alice, {"from": accounts[0]})
+
+
 
 @pytest.fixture(scope="module")
 def gauge_controller(GaugeController, accounts, token, voting_escrow):

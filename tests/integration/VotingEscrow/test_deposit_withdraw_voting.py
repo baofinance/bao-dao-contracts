@@ -71,6 +71,7 @@ class StateMachine:
                 "unlock_time": tx.events["Deposit"]["locktime"],
             }
 
+
     def rule_increase_amount(self, st_account, st_value):
         if st_value == 0:
             with brownie.reverts("dev: need non-zero value"):
