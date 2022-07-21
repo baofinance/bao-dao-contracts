@@ -1,4 +1,5 @@
 import pytest
+from requests import session
 from web3 import Web3
 from brownie import (
     BaseBurner,
@@ -74,6 +75,10 @@ def charlie(accounts):
 def receiver(accounts):
     yield accounts.at("0x0000000000000000000000000000000000031337", True)
 
+@pytest.fixture(scope="session")
+def locked_bao_eoa(accounts):
+    yield accounts.at("0x5CD6c2Cb10Ef57cad5225E322d3F818DD351b83E", True)
+
 
 # core contracts
 
@@ -92,7 +97,8 @@ def voting_escrow(VotingEscrow, accounts, token):
 
 @pytest.fixture(scope="module")
 def bao_distribution(BaoDistribution, token, voting_escrow, alice, accounts):
-    yield BaoDistribution.deploy(token, voting_escrow, merkle_root, alice, {"from": accounts[0]})
+    yield BaoDistribution.deploy(token, voting_escrow, merkle_root, alice, {"from": accounts[0]}
+    )
 
 
 
