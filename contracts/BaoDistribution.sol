@@ -579,6 +579,7 @@ contract BaoDistribution is ReentrancyGuard {
     error InvalidProof(address _account, uint256 _amount, bytes32[] _proof);
     error ZeroClaimable();
     error InvalidTimestamp();
+    error outsideLockRange();
 
     /**
      * Create a new BaoDistribution contract.
@@ -690,10 +691,13 @@ contract BaoDistribution is ReentrancyGuard {
      *
      * The Lock into veBAO will be set at 3 years with this function in-line with length of distribution curve
      */
-    function lockDistribution() external nonReentrant {
+    function lockDistribution(uint256 _time) external nonReentrant {
         uint256 _claimable = claimable(msg.sender, 0);
         if (_claimable == 0) {
             revert ZeroClaimable();
+        }
+        if (_time < 94608000) {
+            revert outsideLockRange();
         }
 
         DistInfo storage distInfo = distributions[msg.sender];
@@ -704,8 +708,10 @@ contract BaoDistribution is ReentrancyGuard {
         // Calculate total tokens left in distribution after the above claim
         uint256 tokensLeft = distInfo.amountOwedTotal - distCurve(distInfo.amountOwedTotal, daysSinceStart);
 
-        //lock tokensLeft for msg.sender for 3 years
-        votingEscrow.create_lock_for(msg.sender, tokensLeft, (3*365*86400));
+        baoToken.approve(address(votingEscrow), tokensLeft);
+
+        //lock tokensLeft for msg.sender for _time years (minimum of 3 years)
+        votingEscrow.create_lock_for(msg.sender, tokensLeft, _time);
 
         emit DistributionLocked(msg.sender, tokensLeft);
     }

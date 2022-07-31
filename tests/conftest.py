@@ -76,8 +76,12 @@ def receiver(accounts):
     yield accounts.at("0x0000000000000000000000000000000000031337", True)
 
 @pytest.fixture(scope="session")
-def locked_bao_eoa(accounts):
-    yield accounts.at("0x5CD6c2Cb10Ef57cad5225E322d3F818DD351b83E", True)
+def locked_bao_eoa_1(accounts):
+    yield accounts.at("0x48b72465fed54964a9a0bb2fb95dbc89571604ec", True)
+
+@pytest.fixture(scope="session")
+def locked_bao_eoa_2(accounts):
+    yield accounts.at("0x609991ca0Ae39BC4EAF2669976237296D40C2F31", True)
 
 
 # core contracts

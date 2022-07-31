@@ -1,5 +1,3 @@
-from tests.conftest import approx
-
 
 H = 3600
 DAY = 86400
