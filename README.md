@@ -89,7 +89,7 @@ Contact our community here:
 
 ### Contract Change Overview
 
-- Fee Burning is routed through the [Ballast](https://docs.bao.finance/franchises/bao-markets-hard-synths) in the [BaseBurner](contracts/burners/BaseBurner.vy) contract and that is where swaps from DAI to baoUSD will occur if the situation arises. After the burning process occurs baoUSD is sent to the [FeeDistributor](contracts/FeeDistributor.vy) in order to be sent to veBAO holders.
+- Fee Burning is routed through the [Ballast](https://docs.bao.finance/franchises/bao-markets-hard-synths#ballast) in the [BaseBurner](contracts/burners/BaseBurner.vy) contract and that is where swaps from DAI to baoUSD will occur if the situation arises. After the burning process occurs baoUSD is sent to the [FeeDistributor](contracts/FeeDistributor.vy) in order to be sent to veBAO holders.
 
 - The Voting Escrow contract has added functionality in order for the [distribution contract](https://github.com/baofinance/bao-token/blob/main/src/BaoDistribution.sol) to interact and create locks for existing users that have previously locked BAO in line with the distribution proposal.
 
