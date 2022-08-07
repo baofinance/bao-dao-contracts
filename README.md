@@ -69,7 +69,7 @@ Contact our community here:
 - [Twitter](https://twitter.com/BaoCommunity)
 - [Discord](https://discord.gg/YyugY4XXtE)
 
-## Detailed Description of protocol and contract changes
+## Summary of protocol and contract changes
 
 ### Bao Distribution
 
