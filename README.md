@@ -93,7 +93,7 @@ Contact our community here:
 
 - The Voting Escrow contract has added functionality in order for the [distribution contract](https://github.com/baofinance/bao-token/blob/main/src/BaoDistribution.sol) to interact and create locks for existing users that have previously locked BAO in line with the distribution proposal to allow locked Bao holders to lock into veBAO.
 
-- The token contract is an updated of Curve's token implementation.
+- The token contract is an updated version of Curve's token implementation.
 
 
 ## License
