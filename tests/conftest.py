@@ -1,4 +1,6 @@
 import pytest
+from requests import session
+from web3 import Web3
 from brownie import (
     BaseBurner,
     compile_source,
@@ -27,6 +29,9 @@ def pack_values(values):
 @pytest.fixture(autouse=True)
 def isolation_setup(fn_isolation):
     pass
+
+
+merkle_root = Web3.toBytes(0xe8e5ee10e72c2e561fb3c63d5d87972fd105b0c935acfd5b5ab9e504484b4530)
 
 
 # helper functions as fixtures
@@ -70,13 +75,21 @@ def charlie(accounts):
 def receiver(accounts):
     yield accounts.at("0x0000000000000000000000000000000000031337", True)
 
+@pytest.fixture(scope="session")
+def locked_bao_eoa_1(accounts):
+    yield accounts.at("0x48b72465fed54964a9a0bb2fb95dbc89571604ec", True)
+
+@pytest.fixture(scope="session")
+def locked_bao_eoa_2(accounts):
+    yield accounts.at("0x609991ca0Ae39BC4EAF2669976237296D40C2F31", True)
+
 
 # core contracts
 
 
 @pytest.fixture(scope="module")
-def token(BAO, accounts):
-    yield BAO.deploy("BAO Token", "BAO", 18, {"from": accounts[0]})
+def token(ERC20BAO, accounts):
+    yield ERC20BAO.deploy("BAO Token", "BAO", 18, {"from": accounts[0]})
 
 
 @pytest.fixture(scope="module")
@@ -84,6 +97,13 @@ def voting_escrow(VotingEscrow, accounts, token):
     yield VotingEscrow.deploy(
         token, "Voting-escrowed BAO", "veBAO", "veBAO_0.99", {"from": accounts[0]}
     )
+
+
+@pytest.fixture(scope="module")
+def bao_distribution(BaoDistribution, token, voting_escrow, alice, accounts):
+    yield BaoDistribution.deploy(token, voting_escrow, merkle_root, alice, {"from": accounts[0]}
+    )
+
 
 
 @pytest.fixture(scope="module")

@@ -71,6 +71,7 @@ class StateMachine:
                 "unlock_time": tx.events["Deposit"]["locktime"],
             }
 
+
     def rule_increase_amount(self, st_account, st_value):
         if st_value == 0:
             with brownie.reverts("dev: need non-zero value"):
@@ -190,7 +191,7 @@ class StateMachine:
 def test_state_machine(state_machine, accounts, VotingEscrow):
     token = ERC20("", "", 18)
     voting_escrow = VotingEscrow.deploy(
-        token, "Voting-escrowed CRV", "veCRV", "veCRV_0.99", {"from": accounts[0]}
+        token, "Voting-escrowed BAO", "veBAO", "veBAO_0.99", {"from": accounts[0]}
     )
 
     state_machine(StateMachine, accounts[:10], token, voting_escrow, settings={"max_examples": 30})
