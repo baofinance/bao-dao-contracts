@@ -579,7 +579,7 @@ contract BaoDistribution is ReentrancyGuard {
     error InvalidProof(address _account, uint256 _amount, bytes32[] _proof);
     error ZeroClaimable();
     error InvalidTimestamp();
-    error outsideLockRange();
+    error OutsideLockRange();
 
     /**
      * Create a new BaoDistribution contract.
@@ -692,16 +692,16 @@ contract BaoDistribution is ReentrancyGuard {
      * The Lock into veBAO will be set at 3 years with this function in-line with length of distribution curve
      */
     function lockDistribution(uint256 _time) external nonReentrant {
+        uint64 timestamp = uint64(block.timestamp);
         uint256 _claimable = claimable(msg.sender, 0);
         if (_claimable == 0) {
             revert ZeroClaimable();
         }
-        if (_time < 94608000) {
-            revert outsideLockRange();
+        if (_time < timestamp + 94608000) {
+            revert OutsideLockRange();
         }
 
         DistInfo storage distInfo = distributions[msg.sender];
-        uint64 timestamp = uint64(block.timestamp);
 
         uint256 daysSinceStart = FixedPointMathLibrary.mulDivDown(uint256(timestamp - distInfo.dateStarted), 1e18, 86400);
 
