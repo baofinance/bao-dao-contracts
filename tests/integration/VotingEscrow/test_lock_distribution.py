@@ -1,7 +1,4 @@
 import brownie
-from lockfile import locked
-from web3 import Web3
-from tests.conftest import alice, locked_bao_eoa_1, locked_bao_eoa_2
 
 H = 3600
 DAY = 86400
@@ -9,108 +6,75 @@ WEEK = 7 * DAY
 MAXTIME = 126144000
 
 
-def test_create_lock_for(web3, chain, accounts, token, voting_escrow, bao_distribution):
-    locked_bao_eoa_1, locked_bao_eoa_2 = accounts[:2]
+def test_lock_distr(web3, chain, accounts, token, voting_escrow, bao_distribution):
+    # locked_bao_eoa_1, locked_bao_eoa_2 = accounts[:2]
+    eoa1 = 100
+    eoa2 = 101
+    eoa1Amount = 53669753833360467444414559923
+    eoa2Amount = 44599721927768192099018289499
 
-    # ADDRESS -> 0x48b72465fed54964a9a0bb2fb95dbc89571604ec || "0x7c55d8a6ded3b13b342fc383df5bb934076f49a6598303ea68ea78ae4630d445","0xc27d9182b8a0059391b0b9ca0cd520eb8736edcbc31fb409171e1c0c86bb6b47", "0xbf0649842a7abec3aecd9067bb1565450eaee8774e9c1e28d4275abeef8ad9c0","0x45cb0fcc27fd4559bef5a821fec38dcf6f8c076fa52d688b3653fd3902e8a242","0xa17e5ebb128d4249fdf897c65851abe21350c52426c7c7935ef690f6754f5ced","0xca7d3efb93698e6d63e7b775d7bde2fab51d2b54bec39aaf9616689bd597d716","0x22259a0def7b4a34a9f696b57de8d5082416afad0fc9389bf13bad33400da8eb" "0xc9a6a2d0cc907edf49306c38f85c6b5563495ca17edc9dd94fbf7af6bdf57b39","0x8da8749519129e9950750cdc331c45fc2a2afafa32d7cb1c29cf4163c2518c15","0xb3b2fa4717a6ce8dfda614923c909fef4ec0f31867f9f6c9d6e62db4331cb098","0xac5cd164456811dcbaf2f5776ef203e571752a72f9d3448038372ea6f6b85eac","0xb9d7a9c91a83f031de3c12050ece30c8c0be1d18a05d8e4bb00d582933b41e9a","0xbd5c245a1020a83e5fd82a003737eaf52a7c285465a2fcd9d4eced16eb2dbd73"
+    accounts[98].transfer(accounts[eoa1], "100 ether")
+    accounts[99].transfer(accounts[eoa2], "100 ether")
 
-    eoa_1_proof_arr = [ 0x7c55d8a6ded3b13b342fc383df5bb934076f49a6598303ea68ea78ae4630d445, 
-                        0xc27d9182b8a0059391b0b9ca0cd520eb8736edcbc31fb409171e1c0c86bb6b47,
-                        0xbf0649842a7abec3aecd9067bb1565450eaee8774e9c1e28d4275abeef8ad9c0,
-                        0x45cb0fcc27fd4559bef5a821fec38dcf6f8c076fa52d688b3653fd3902e8a242,
-                        0xa17e5ebb128d4249fdf897c65851abe21350c52426c7c7935ef690f6754f5ced,
-                        0xca7d3efb93698e6d63e7b775d7bde2fab51d2b54bec39aaf9616689bd597d716,
-                        0x22259a0def7b4a34a9f696b57de8d5082416afad0fc9389bf13bad33400da8eb,
-                        0xc9a6a2d0cc907edf49306c38f85c6b5563495ca17edc9dd94fbf7af6bdf57b39,
-                        0x8da8749519129e9950750cdc331c45fc2a2afafa32d7cb1c29cf4163c2518c15,
-                        0xb3b2fa4717a6ce8dfda614923c909fef4ec0f31867f9f6c9d6e62db4331cb098,
-                        0xac5cd164456811dcbaf2f5776ef203e571752a72f9d3448038372ea6f6b85eac,
-                        0xb9d7a9c91a83f031de3c12050ece30c8c0be1d18a05d8e4bb00d582933b41e9a,
-                        0xbd5c245a1020a83e5fd82a003737eaf52a7c285465a2fcd9d4eced16eb2dbd73 ]
+    # ADDRESS ->  
 
-
-    # ADDRESS -> 0x609991ca0ae39bc4eaf2669976237296d40c2f31 || "0x75a5df27f59d8f12b00fb0b5e99cb9a54a8e7bf1c11c77f7604ae3fcceb33778","0x0eb894e8ddfe6a3441a1711d4ce85460015898bcbc106f7ee81bdcaca983a2a3","0xcaaf22be08cee8c5b505ee13a1d72e1149c0f56a5be23b556fda68d086c40b28","0x42bfc44cd7808669acd3b29704661163f50450491510942850931ab16674cfe6","0x398e8d731b2ae955e94ad80f366af2ba20cac56a56c75449ad6a931943007e47","0x35f1f3bdf25b692b184ff9e371448ac106252dc68f74043643498d5a57630f55","0xe62c69e75837a33bc47aecf3d99c9d93859332a57b224004c50e5d7f830f7a95","0x59d9ec460946a700964a1639f669af18933abb9dcd80a72b833e746231dadb40","0x5eaa5caa85c1fc3b000da1dd71f06736b10d7c1c5ad8f727e71403fd1ade239c","0xb3b2fa4717a6ce8dfda614923c909fef4ec0f31867f9f6c9d6e62db4331cb098","0xac5cd164456811dcbaf2f5776ef203e571752a72f9d3448038372ea6f6b85eac","0xb9d7a9c91a83f031de3c12050ece30c8c0be1d18a05d8e4bb00d582933b41e9a","0xbd5c245a1020a83e5fd82a003737eaf52a7c285465a2fcd9d4eced16eb2dbd73"
-
-    eoa_2_proof_arr = [ 0x75a5df27f59d8f12b00fb0b5e99cb9a54a8e7bf1c11c77f7604ae3fcceb33778, 
-                        0x0eb894e8ddfe6a3441a1711d4ce85460015898bcbc106f7ee81bdcaca983a2a3,
-                        0xcaaf22be08cee8c5b505ee13a1d72e1149c0f56a5be23b556fda68d086c40b28,
-                        0x42bfc44cd7808669acd3b29704661163f50450491510942850931ab16674cfe6,
-                        0x398e8d731b2ae955e94ad80f366af2ba20cac56a56c75449ad6a931943007e47,
-                        0x35f1f3bdf25b692b184ff9e371448ac106252dc68f74043643498d5a57630f55,
-                        0xe62c69e75837a33bc47aecf3d99c9d93859332a57b224004c50e5d7f830f7a95,
-                        0x59d9ec460946a700964a1639f669af18933abb9dcd80a72b833e746231dadb40,
-                        0x5eaa5caa85c1fc3b000da1dd71f06736b10d7c1c5ad8f727e71403fd1ade239c,
-                        0xb3b2fa4717a6ce8dfda614923c909fef4ec0f31867f9f6c9d6e62db4331cb098,
-                        0xac5cd164456811dcbaf2f5776ef203e571752a72f9d3448038372ea6f6b85eac,
-                        0xb9d7a9c91a83f031de3c12050ece30c8c0be1d18a05d8e4bb00d582933b41e9a,
-                        0xbd5c245a1020a83e5fd82a003737eaf52a7c285465a2fcd9d4eced16eb2dbd73 ]
+    eoa_1_proof_arr = [ 0x7c55d8a6ded3b13b342fc383df5bb934076f49a6598303ea68ea78ae4630d445,
+                        0x44db9ee999de8b628c5de2592b347008ebd4e77b94f4ef1d121a4aca6e8e8d51,
+                        0xb6a829733a6f85d368893b416f8a967e2189681368d3788134eee3c5bf22e976,
+                        0xb0232903c4ba9256861d60a6ca9d933cb8db387d8a6cecc1cbc178e5d91eacf5,
+                        0x7643968dd707041b7737a52d1fee41fe8ee37ada29585e37b92a090cb91ae86a,
+                        0x3c0d2d3a207e8e01f4c7442bfa1adbfd25ba072c213bc8406a182fb61cb78401,
+                        0x0afca7cc1288693408e2857ddec8b2b4dea74215f0b9219421773ab0b31b8a11,
+                        0x8310cf070515dcb50f13259a1f5cf52c6bd7db2f3004525eaf17c6335ccd333c,
+                        0xbe44074166d23ae6832865be9972f4f3776a903e1a5e9e2c1780313fe629dfa3,
+                        0xbaba52a8a741481583014f906912d7870d53fd776fb6529ec6fca8af2b6877d0,
+                        0x74e8548f3229e22c31e75e2f80ac2757237cc8b435d3658438927bfa891b9763,
+                        0x9d7ff74eec600ac6ffe42f02d4ae6b16219c714e02a535e853850ba9e7677878,
+                        0x4b7feb1f0234422835771be9152c527c22a60ca378ce2fc7f350c1aa8e115032 ]
 
 
-    proof_arr_1 = []
-    proof_arr_2 = []
+    # ADDRESS -> 0x609991ca0ae39bc4eaf2669976237296d40c2f31 
 
+    eoa_2_proof_arr = [ 0x61120ad1ad69e9dd4a8d0e4d2d72006872704ad09437e8b1124c6c6fd4cbcc62,
+                        0xf16a00483fdd6b232b1f8dc1d38f2d7736f6326fb498207fadd565a15ac799c6,
+                        0xf72e7bd6f83b1718aebfd662c53f91d4d725f3a3a64dce05fa79a5cd4087c0a2,
+                        0xeb1b599fcd9f71c9248aff66751e0b491a8cf782e043f8120dc0793afe48ac54,
+                        0xed8b77dc630a5538c387930f522ab42202582fa0c0f899cebb17504eb31a28ac,
+                        0x33f6a6cd5c4266276c16d988bf0ae11a5665832a4edeec1e4421148b7a3224a8,
+                        0x978e16008e26fc2e5f05d2416a29a90b9ef351adbf3c45f5bd905d91ecbac340,
+                        0x91c2521e2283a0671b6bfd8b3d0b042484750c7e8a44f4a828b14a4efca87c8d,
+                        0xcad3ba78a0da6131dd8a1ad22c81b15f85cc327a86317372f465361afcb2f34a,
+                        0x9590cb84d66eed07dd9556fbc7ba6aae3f1864bd0db0a704c40a2b11489f8464,
+                        0x56c84b5ef64065935078154d1631bda16d44c06db4abd19aac7bd420feccaab2,
+                        0x9d7ff74eec600ac6ffe42f02d4ae6b16219c714e02a535e853850ba9e7677878,
+                        0x4b7feb1f0234422835771be9152c527c22a60ca378ce2fc7f350c1aa8e115032 ]
 
-    for x in range(0, len(eoa_1_proof_arr)):
-        proof_arr_1.append(Web3.toHex(eoa_1_proof_arr[x]))
+    token.transfer(bao_distribution, 15e26, {"from": accounts[0]})
 
-    for x in range(0, len(eoa_2_proof_arr)):
-        proof_arr_2.append(Web3.toHex(eoa_2_proof_arr[x]))
-
+    assert token.balanceOf(accounts[0]) == 0
+    assert token.balanceOf(bao_distribution.address) == 15e26
     assert voting_escrow.totalSupply() == 0
-    assert voting_escrow.balanceOf(locked_bao_eoa_1) == 0
-    assert voting_escrow.balanceOf(locked_bao_eoa_2) == 0
+    assert voting_escrow.balanceOf(accounts[eoa1]) == 0
+    assert voting_escrow.balanceOf(accounts[eoa2]) == 0
 
-    # Move to timing which is good for testing - beginning of a UTC week
-    chain.sleep((chain[-1].timestamp // WEEK + 1) * WEEK - chain[-1].timestamp)
+    voting_escrow.commit_distr_contract(bao_distribution, {"from": accounts[0]})
+    voting_escrow.apply_distr_contract({"from": accounts[0]})
+
+    print(bao_distribution.address)
+    print(bao_distribution.treasury())
+
+    bao_distribution.startDistribution(eoa_1_proof_arr, 53669753833360467444414559923, {"from": accounts[eoa1]})
+    bao_distribution.startDistribution(eoa_2_proof_arr, 44599721927768192099018289499, {"from": accounts[eoa2]})
+
     chain.mine()
-    chain.sleep(H)
+    chain.sleep(WEEK)
 
-    bao_distribution.startDistribution(eoa_1_proof_arr, 53669753833360467444414559923, {"from": locked_bao_eoa_1})
-    bao_distribution.startDistribution(eoa_2_proof_arr, 44424944760825108606682818592, {"from": locked_bao_eoa_2})
+    bao_distribution.claim({"from": accounts[eoa1]})
 
-    chain.sleep(H)
+    print(bao_distribution.claimable(accounts[eoa1], chain.time(), {"from": accounts[eoa1]}))
+    print(token.balanceOf(bao_distribution.address))
 
-    bao_distribution.lockDistribution(94608000, {"from": locked_bao_eoa_1}) #lock for 3 years, minimum
-    eoa1_starting_veBAO_bal = voting_escrow.balanceOf(locked_bao_eoa_1)
+    chain.sleep(52*WEEK)
 
-    assert voting_escrow.totalSupply() > 0 #eoa 1 lock makes veBAO supply increase from 0
-    assert voting_escrow.balanceOf(locked_bao_eoa_1) > 0 #ve balance for locker is now > 0
-    assert voting_escrow.balanceOf(locked_bao_eoa_1) == voting_escrow.totalSupply() # since only 1 lock exists total supply and eoa1 balance should be equal
-    assert voting_escrow.balanceOf(bao_distribution) == 0 #distribution should never have a veBAO balance
-    with brownie.reverts():
-        bao_distribution.claimable(locked_bao_eoa_1, chain.time(), {"from": locked_bao_eoa_1}) #claimable for eoa 1 after lock should revert
-
-    chain.sleep(52* WEEK) # fast forward 1 year
-
-    eoa2_1st_claim_bal = bao_distribution.claimable(locked_bao_eoa_2, chain.time(), {"from": locked_bao_eoa_2})
-    bao_distribution.claim({"from": locked_bao_eoa_2}) # eoa 2 claims from distribution contract, no lock
-
-    chain.sleep(WEEK) # fast forward 1 week
-
-    assert voting_escrow.totalSupply() == voting_escrow.balanceOf(locked_bao_eoa_1) # 1 lock exists, so total ve supply and that 1 lock balance should be equal
-    assert bao_distribution.claimable(locked_bao_eoa_2, chain.time(), {"from": locked_bao_eoa_2}) < eoa2_1st_claim_bal # the amount available to claim should now be less after eoa 2 claims
-    assert voting_escrow.balanceOf(locked_bao_eoa_1) < eoa1_starting_veBAO_bal # veBAO balance should linearly decay and eoa1's lock should reflect that
-
-    before_eoa2_lock_supply = voting_escrow.totalSupply()
-    bao_distribution.lockDistribution(4*365*86400, {"from": locked_bao_eoa_2}) #eoa2 lock for 4 years, Max
-    eoa2_starting_veBAO_bal = voting_escrow.balanceOf(locked_bao_eoa_2)
-
-    assert voting_escrow.totalSupply() > before_eoa2_lock_supply # the 2nd lock from eoa2 should make total ve supply increase
-    assert voting_escrow.balanceOf(locked_bao_eoa_2) > 0 #ve balance for 2nd locker is now > 0
-    assert (voting_escrow.balanceOf(locked_bao_eoa_1) + voting_escrow.balanceOf(locked_bao_eoa_2)) == voting_escrow.totalSupply() # 2 locks should = ve total
-    assert voting_escrow.balanceOf(bao_distribution) == 0 #distribution should never have a veBAO balance
-    with brownie.reverts():
-        bao_distribution.claimable(locked_bao_eoa_1, chain.time(), {"from": locked_bao_eoa_1}) #claimable for eoa 2 after lock should revert
-
-    chain.sleep(52*2*WEEK) #fast forward 2 years
-    
-    assert voting_escrow.balanceOf(locked_bao_eoa_2) < eoa2_starting_veBAO_bal # veBAO balance should linearly decay and eoa2's lock should reflect that
-    assert voting_escrow.balanceOf(locked_bao_eoa_1) == 0 # time since eoa1's lock was created has exceeded 3 years/lock time
-    assert voting_escrow.balanceOf(locked_bao_eoa_2) == voting_escrow.totalSupply() # 1 active lock now that eoa1 lock expired || ve total = eoa2 balanceOf
-
-    chain.sleep(52*2*WEEK + WEEK) # 2 years + 1 Week
-
-    assert voting_escrow.balanceOf(locked_bao_eoa_2) == 0 # eoa2 should be expired by this time
-    assert voting_escrow.totalSupply() == 0 # there should be no more active locks
-    
-
+    # Will revert cuz of BROWNIEEEEEEEE ENVIRONMENTTTT ERRRROOOORRSSS, I have no idea
+    bao_distribution.lockDistribution((chain.time() + 3*365*86400 + WEEK), {"from": accounts[eoa1]}) #lock for 3 years, minimum

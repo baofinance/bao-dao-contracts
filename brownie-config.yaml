@@ -5,12 +5,17 @@ reports:
 networks:
   development:
     cmd_settings:
+      unlock:
+        - 0x48b72465fed54964a9a0bb2fb95dbc89571604ec
+        - 0x609991ca0ae39bc4eaf2669976237296d40c2f31
       accounts: 100
       chain_id: 1337
+      
   mainnet-fork:
     host: https://mainnet.infura.io/v3/56f22f6f02894d55809f1dcbc0f65bd9
     cmd_settings:
-      unlock: 0xC447FcAF1dEf19A583F97b3620627BF69c05b5fB
+      unlock: 
+      - 0xC447FcAF1dEf19A583F97b3620627BF69c05b5fB
 
 autofetch_sources: True
 dependencies:
