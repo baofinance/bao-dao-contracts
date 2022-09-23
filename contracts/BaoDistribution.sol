@@ -542,6 +542,7 @@ contract BaoDistribution is ReentrancyGuard {
     IERC20 public baoToken;
     IVotingEscrow public votingEscrow;
     mapping(address => DistInfo) public distributions;
+    mapping(address => bool) public lockStatus;
     address public treasury;
 
     // -------------------------------
@@ -579,7 +580,8 @@ contract BaoDistribution is ReentrancyGuard {
     error InvalidProof(address _account, uint256 _amount, bytes32[] _proof);
     error ZeroClaimable();
     error InvalidTimestamp();
-    error OutsideLockRange();
+    error outsideLockRange();
+    error alreadyLocked();
 
     /**
      * Create a new BaoDistribution contract.
@@ -617,7 +619,7 @@ contract BaoDistribution is ReentrancyGuard {
             _now,
             0,
             _now,
-            _amount
+            _amount / 1000
         );
         emit DistributionStarted(msg.sender);
     }
@@ -689,19 +691,22 @@ contract BaoDistribution is ReentrancyGuard {
     /**
      * Lock all tokens that have NOT been claimed since msg.sender's last claim
      *
-     * The Lock into veBAO will be set at 3 years with this function in-line with length of distribution curve
+     * The Lock into veBAO will be set at _time with this function in-line with length of distribution curve (minimum of 3 years)
      */
     function lockDistribution(uint256 _time) external nonReentrant {
-        uint64 timestamp = uint64(block.timestamp);
+        if (lockStatus[msg.sender] == true) {
+            revert alreadyLocked();
+        }
         uint256 _claimable = claimable(msg.sender, 0);
         if (_claimable == 0) {
             revert ZeroClaimable();
         }
-        if (_time < timestamp + 94608000) {
-            revert OutsideLockRange();
+        if (_time < block.timestamp + 94608000) {
+            revert outsideLockRange();
         }
 
         DistInfo storage distInfo = distributions[msg.sender];
+        uint64 timestamp = uint64(block.timestamp);
 
         uint256 daysSinceStart = FixedPointMathLibrary.mulDivDown(uint256(timestamp - distInfo.dateStarted), 1e18, 86400);
 
@@ -712,6 +717,9 @@ contract BaoDistribution is ReentrancyGuard {
 
         //lock tokensLeft for msg.sender for _time years (minimum of 3 years)
         votingEscrow.create_lock_for(msg.sender, tokensLeft, _time);
+
+        lockStatus[msg.sender] = true;
+        distInfo.dateEnded = timestamp;
 
         emit DistributionLocked(msg.sender, tokensLeft);
     }

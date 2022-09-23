@@ -34,5 +34,5 @@ def test_burn_all(accounts, token):
 def test_overburn(accounts, token):
     initial_supply = token.totalSupply()
 
-    with brownie.reverts("Integer overflow"):
+    with brownie.reverts():
         token.burn(initial_supply + 1, {"from": accounts[0]})
