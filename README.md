@@ -4,7 +4,7 @@ Vyper contracts used in [Bao](https://bao.finance/) Governance.
 
 ## Overview
 
-Bao Finance consists of multiple smart contracts connected by [Aragon](https://github.com/aragon/aragonOS). Interaction with Aragon occurs through a [modified implementation](https://github.com/curvefi/curve-aragon-voting) of the [Aragon Voting App](https://github.com/aragon/aragon-apps/tree/master/apps/voting) implemeneted by Curve Finance. Aragon's standard one token, one vote method is replaced with a weighting system based on locking tokens. Bao Finance has a token (BAO) which is used for both governance and value accrual, parellel to the operation of our synthetic asset markets.
+Bao Finance consists of multiple smart contracts connected by [Aragon](https://github.com/aragon/aragonOS). Interaction with Aragon occurs through a [modified implementation](https://github.com/curvefi/curve-aragon-voting) of the [Aragon Voting App](https://github.com/aragon/aragon-apps/tree/master/apps/voting) implemented by Curve Finance. Aragon's standard one token, one vote method is replaced with a weighting system based on locking tokens. Bao Finance has a token (BAO) which is used for both governance and value accrual, parellel to the operation of our synthetic asset markets.
 
 View the [documentation](https://docs.bao.finance/) for a more in-depth explanation of how Bao Finance works.
 
