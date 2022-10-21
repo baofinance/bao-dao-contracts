@@ -10,8 +10,6 @@ task("bao:GaugeController:addGauge", "Add a gauge to the controller.")
     const accounts = await ethers.getSigners()
     const signer = accounts.find((acc) => acc.address === deployer)
 
-    const { address: gaugeAddress } = await deployments.get(`LiquidityGaugeV3_${taskArgs.gauge}`)
-
     try {
       parseInt(taskArgs.weight)
     } catch {
@@ -27,6 +25,8 @@ task("bao:GaugeController:addGauge", "Add a gauge to the controller.")
     const controller = new ethers.Contract(gcAddress, gcAbi, signer)
 
     let tx
+
+    const { address: gaugeAddress } = await deployments.get(`LiquidityGaugeV3_${taskArgs.gauge}`)
     tx = await controller['add_gauge(address,int128,uint256)'](gaugeAddress, parseInt(taskArgs.type), parseInt(taskArgs.weight))
     await tx.wait()
     console.log("Added gauge!")
@@ -73,5 +73,5 @@ task("bao:GaugeController:changeOwner", "Change the admin of the GaugeController
     await tx.wait()
     tx = await controller.apply_transfer_ownership()
     await tx.wait()
-    console.log("Owner set")
+    console.log("Owner set!")
   })

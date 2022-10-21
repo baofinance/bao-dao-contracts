@@ -15,6 +15,6 @@ task("bao:LiquidityGaugeV3:changeOwner", "Change the admin of a LiquidityGaugeV3
 
     tx = await gauge.commit_transfer_ownership(taskArgs.admin)
     await tx.wait()
-    console.log("Owner set")
+    console.log("Ownership transfer set")
     console.log("!! accept_transfer_ownership() must be called by the new admin signer!")
   })

@@ -17,14 +17,14 @@ task("bao:VotingEscrow:changeOwner", "Set the smart wallet checker, distribution
     await tx.wait()
     tx = await ve.apply_smart_wallet_checker()
     await tx.wait()
-    console.log("Setup smart wallet whitelist")
+    console.log("Setup: smart wallet whitelist")
 
     const { address: distributionAddress } = await deployments.get('BaoDistribution')
     tx = await ve.commit_distr_contract(distributionAddress)
     await tx.wait()
     tx = await ve.apply_distr_contract()
     await tx.wait()
-    console.log("Setup distribution contract")
+    console.log("Setup: distribution contract")
 
     tx = await ve.commit_transfer_ownership(taskArgs.admin)
     await tx.wait()
