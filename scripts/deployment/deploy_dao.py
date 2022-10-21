@@ -8,10 +8,11 @@ from brownie import (
     VotingEscrow,
     BaoDistribution,
     FeeDistributor,
+    Swapper,
     accounts,
     history,
 )
-from importlib_metadata import distribution
+# from importlib_metadata import distribution
 
 from . import deployment_config as config
 
@@ -63,7 +64,7 @@ def deploy_part_one(admin, confs=1, deployments_json="deployments.json"):
         "ERC20BAO": token.address,
         "VotingEscrow": voting_escrow.address,
     }
-    
+
     if deployments_json is not None:
         with open(deployments_json, "w") as fp:
             json.dump(deployments, fp)
@@ -86,6 +87,8 @@ def deploy_part_two(admin, token, voting_escrow, confs=1, deployments_json="depl
     minter = Minter.deploy(token, gauge_controller, {"from": admin, "required_confs": confs})
     token.set_minter(minter, {"from": admin, "required_confs": confs})
 
+    swapper = Swapper.deploy(token, {"from": admin, "required_confs": confs})
+
     #fee distributor
 
     deployments = {
@@ -93,6 +96,8 @@ def deploy_part_two(admin, token, voting_escrow, confs=1, deployments_json="depl
         "VotingEscrow": voting_escrow.address,
         "GaugeController": gauge_controller.address,
         "Minter": minter.address,
+        "Distribution": distribution.address,
+        "Swapper": swapper.address,
         "LiquidityGaugeV3": {},
     }
     for name, (lp_token, weight) in POOL_TOKENS.items():

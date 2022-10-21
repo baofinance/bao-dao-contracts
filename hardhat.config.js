@@ -79,6 +79,18 @@ module.exports = {
       saveDeployments: true,
     },
 
+    sepolia: {
+      url: `https://sepolia.infura.io/v3/${infuraId}`, // <---- YOUR INFURA ID! (or it won't work)
+      accounts: { mnemonic: process.env.MNEMONIC_SEPOLIA, },
+      chainId: 11155111,
+      //gasPrice: mainnetGwei * 1000000000,
+      saveDeployments: true,
+      urls: {
+        apiURL: "https://api-sepolia.etherscan.io/api",
+        browserURL: "https://sepolia.etherscan.io",
+      },
+    },
+
   }, // .networks
 
   solidity: {

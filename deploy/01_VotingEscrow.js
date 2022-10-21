@@ -5,14 +5,11 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
 
   const { address: baov2_address } = await deployments.get('ERC20BAO')
 
-  const deploy = await deployments.deploy('VotingEscrow', {
+  await deployments.deploy('VotingEscrow', {
     from: deployer,
     args: [baov2_address, 'Vote Escrowed BAO', 'veBAO', "0.2.4"],
     log: true,
   })
-
-  //const veBAO_factory = ethers.getContractFactory('VotingEscrow')
-  //const veBAO = veBAO_factory.connect(deploy.address, deployer)
 }
 
 module.exports.tags = ['veBAO']

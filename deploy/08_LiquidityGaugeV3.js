@@ -19,7 +19,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
     from: deployer,
     contract: 'LiquidityGaugeV3',
     args: ['0x0FaFaFD3C393ead5F5129cFC7e0E12367088c473', minter_address, admin],
-    gasLimit: 3000000,
+    gasLimit: 4000000,
     log: true,
   })
 
@@ -28,7 +28,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
     from: deployer,
     contract: 'LiquidityGaugeV3',
     args: ['0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23', minter_address, admin],
-    gasLimit: 3000000,
+    gasLimit: 4000000,
     log: true,
   })
 
@@ -37,7 +37,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
     from: deployer,
     contract: 'LiquidityGaugeV3',
     args: ['0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8', minter_address, admin],
-    gasLimit: 3000000,
+    gasLimit: 4000000,
     log: true,
   })
 

@@ -357,7 +357,7 @@ varint==1.0.2
     #   multiaddr
 vvm==0.1.0
     # via eth-brownie
-vyper==0.3.1
+vyper==0.3.2
     # via eth-brownie
 wcwidth==0.2.5
     # via

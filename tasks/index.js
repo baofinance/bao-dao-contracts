@@ -1,1 +1,6 @@
-require('./AddGauge.js')
+require('./GaugeController.js')
+require('./ERC20BAO.js')
+require('./VotingEscrow.js')
+require('./FeeDistributor.js')
+require('./baseBurnerChangeOwner.js')
+require('./LiquidityGaugeV3.js')
