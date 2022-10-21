@@ -3,20 +3,17 @@
 
 ## Setup
 
-Copy .env.example to .env and fix it up.
+1. Clone this repo then copy `.env.example` to `.env` and fix it up with the right variables for *you*!
+2. Run `npm install` from the root of the repo. I'm using Node.js v16.13.2.
+3. `npm install --global hardhat-shorthand` to install the *hh* -- hardhat-shorthand executable to your path.
+4. `hardhat-completion install`, then run `exec $SHELL` and now you can tab-complete the `hh` command.
 
-Install the *hh* -- hardhat-shorthand executable to your path.
+Finally:
 
-1. `npm install --global hardhat-shorthand`
-1. `hardhat-completion install`, then `exec $SHELL` and now you can tab-complete the `hh` command
-
-
-## Tutorial
-
-Run an anvil fork of mainnet to give hardhat a working `--network localhost`!
+* Run an `anvil` fork of Ethereum mainnet to give hardhat a working `--network localhost`!
 
 
-### Step 1 - Deploy all the contracts:
+### Step 1 - Deploy all the contracts
 
 * Run `hh --network localhost deploy` and confirm all contracts get deployed to your mainnet fork.
 
