@@ -11,3 +11,6 @@ mnemonic*.txt
 artifacts/build-info
 artifacts/**/*.dbg.json
 deployments/localhost
+
+artifacts/
+deployments/
