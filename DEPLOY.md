@@ -72,6 +72,8 @@ apply_admin.
 
 Transfer ownership from deployer to treasury, set emergency recovery address.
 
+TODO: exactly who are the emergency and recovery addresses? Are they a separate multisig? We should consult Baowolf.
+
 1. `hh bao:BaseBurner:changeOwner --admin $TREASURY --emergency $TREASURY --recovery $TREASURY`
 
 
