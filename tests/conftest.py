@@ -129,15 +129,6 @@ def reward_contract(CurveRewards, mock_lp_token, accounts, coin_reward):
     contract.setRewardDistribution(accounts[0], {"from": accounts[0]})
     yield contract
 
-@pytest.fixture(scope="module")
-def liquidity_gauge(LiquidityGauge, accounts, mock_lp_token, minter):
-    yield LiquidityGauge.deploy(mock_lp_token, minter, accounts[0], {"from": accounts[0]})
-
-
-@pytest.fixture(scope="module")
-def gauge_v2(LiquidityGaugeV2, alice, mock_lp_token, minter):
-    yield LiquidityGaugeV2.deploy(mock_lp_token, minter, alice, {"from": alice})
-
 
 @pytest.fixture(scope="module")
 def gauge_v3(LiquidityGaugeV3, alice, mock_lp_token, minter):
@@ -154,96 +145,14 @@ def gauge_v5(LiquidityGaugeV5, alice, token, mock_lp_token):
 
 
 @pytest.fixture(scope="module")
-def rewards_only_gauge(RewardsOnlyGauge, alice, mock_lp_token):
-    yield RewardsOnlyGauge.deploy(alice, mock_lp_token, {"from": alice})
-
-
-@pytest.fixture(scope="module")
-def gauge_wrapper(LiquidityGaugeWrapper, accounts, liquidity_gauge):
-    yield LiquidityGaugeWrapper.deploy(
-        "Tokenized Gauge", "TG", liquidity_gauge, accounts[0], {"from": accounts[0]}
-    )
-
-@pytest.fixture(scope="module")
-def liquidity_gauge_reward(
-    LiquidityGaugeReward, accounts, mock_lp_token, minter, reward_contract, coin_reward
-):
-    yield LiquidityGaugeReward.deploy(
-        mock_lp_token,
-        minter,
-        reward_contract,
-        coin_reward,
-        accounts[0],
-        {"from": accounts[0]},
-    )
-
-@pytest.fixture(scope="module")
-def reward_gauge_wrapper(LiquidityGaugeRewardWrapper, accounts, liquidity_gauge_reward):
-    yield LiquidityGaugeRewardWrapper.deploy(
-        "Tokenized Reward Gauge",
-        "TG",
-        liquidity_gauge_reward,
-        accounts[0],
-        {"from": accounts[0]},
-    )
-
-
-@pytest.fixture(scope="module")
-def three_gauges(LiquidityGauge, accounts, mock_lp_token, minter):
+def three_gauges(LiquidityGaugeV3, accounts, mock_lp_token, minter):
     contracts = [
-        LiquidityGauge.deploy(mock_lp_token, minter, accounts[0], {"from": accounts[0]})
+        LiquidityGaugeV3.deploy(mock_lp_token, minter, accounts[0], {"from": accounts[0]})
         for _ in range(3)
     ]
 
     yield contracts
 
-
-# VestingEscrow fixtures
-
-
-@pytest.fixture(scope="module")
-def start_time(chain):
-    yield chain.time() + 1000 + 86400 * 365
-
-
-@pytest.fixture(scope="module")
-def end_time(start_time):
-    yield start_time + 100000000
-
-
-@pytest.fixture(scope="module")
-def vesting(VestingEscrow, accounts, coin_a, start_time, end_time):
-    contract = VestingEscrow.deploy(
-        coin_a, start_time, end_time, True, accounts[1:5], {"from": accounts[0]}
-    )
-    coin_a._mint_for_testing(accounts[0], 10 ** 21)
-    coin_a.approve(contract, 10 ** 21, {"from": accounts[0]})
-    yield contract
-
-
-@pytest.fixture(scope="module")
-def vesting_target(VestingEscrowSimple, accounts):
-    yield VestingEscrowSimple.deploy({"from": accounts[0]})
-
-
-@pytest.fixture(scope="module")
-def vesting_factory(VestingEscrowFactory, accounts, vesting_target):
-    yield VestingEscrowFactory.deploy(vesting_target, accounts[0], {"from": accounts[0]})
-
-
-@pytest.fixture(scope="module")
-def vesting_simple(VestingEscrowSimple, accounts, vesting_factory, coin_a, start_time):
-    coin_a._mint_for_testing(vesting_factory, 10 ** 21)
-    tx = vesting_factory.deploy_vesting_contract(
-        coin_a,
-        accounts[1],
-        10 ** 20,
-        True,
-        100000000,
-        start_time,
-        {"from": accounts[0]},
-    )
-    yield VestingEscrowSimple.at(tx.new_contracts[0])
 
 # Bao Markets fixtures
 
@@ -252,7 +161,7 @@ def feeToken(Synth, accounts):
     yield Synth.deploy("BAO USD", "baoUSD", 18, {"from": accounts[0]})
 
 
-# burner fixture
+# Burner fixture
 
 @pytest.fixture(
     scope="module",

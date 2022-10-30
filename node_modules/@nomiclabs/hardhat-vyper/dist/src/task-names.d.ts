@@ -1,0 +1,10 @@
+export declare const TASK_COMPILE_VYPER = "compile:vyper";
+export declare const TASK_COMPILE_VYPER_RUN_BINARY = "compile:vyper:binary:run";
+export declare const TASK_COMPILE_VYPER_GET_BUILD = "compile:vyper:binary:get-build";
+export declare const TASK_COMPILE_VYPER_READ_FILE = "compile:vyper:read-file";
+export declare const TASK_COMPILE_VYPER_GET_SOURCE_NAMES = "compile:vyper:get-source-names";
+export declare const TASK_COMPILE_VYPER_GET_SOURCE_PATHS = "compile:vyper:get-source-paths";
+export declare const TASK_COMPILE_VYPER_LOG_DOWNLOAD_COMPILER_START = "compile:vyper:log:download-compiler-start";
+export declare const TASK_COMPILE_VYPER_LOG_DOWNLOAD_COMPILER_END = "compile:vyper:log:download-compiler-end";
+export declare const TASK_COMPILE_VYPER_LOG_COMPILATION_RESULT = "compile:vyper:log:compilation-result";
+//# sourceMappingURL=task-names.d.ts.map
