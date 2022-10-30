@@ -1,5 +1,4 @@
 .vscode
-.hypothesis/
 .venv
 venv
 __pycache__
@@ -13,5 +12,5 @@ artifacts/**/*.dbg.json
 deployments/localhost
 artifacts/
 deployments/
-node_modules/
+node_modules
 reports/
