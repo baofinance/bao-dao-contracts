@@ -27,7 +27,7 @@ task("bao:GaugeController:addGauge", "Add a gauge to the controller.")
     let tx
 
     const { address: gaugeAddress } = await deployments.get(`LiquidityGaugeV3_${taskArgs.gauge}`)
-    tx = await controller['add_gauge(address,int128,uint256)'](gaugeAddress, parseInt(taskArgs.type), parseInt(taskArgs.weight))
+    tx = await controller['add_gauge(address,int128,uint256)'](gaugeAddress, parseInt(taskArgs.type), taskArgs.weight)
     await tx.wait()
     console.log("Added gauge!")
   });
@@ -51,7 +51,7 @@ task("bao:GaugeController:addGaugeType", "Add a gauge type to the controller.")
     const controller = new ethers.Contract(gcAddress, gcAbi, signer)
 
     let tx
-    tx = await controller['add_type(string,uint256)'](taskArgs.name, parseInt(taskArgs.weight))
+    tx = await controller['add_type(string,uint256)'](taskArgs.name, taskArgs.weight)
     await tx.wait()
     console.log("Added type!")
   });

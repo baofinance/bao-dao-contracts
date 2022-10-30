@@ -9,10 +9,8 @@ task("bao:BaseBurner:changeOwner", "Change the admin of the BaseBurner contract.
     const accounts = await ethers.getSigners()
     const signer = accounts.find((acc) => acc.address === deployer)
 
-    const BaseBurner_factory = await ethers.getContractFactory('BaseBurner')
-    const { address: baseBurnerAddress } = await deployments.get('BaseBurner')
-    const bbAbi = BaseBurner_factory.connect(signer, baseBurnerAddress).interface.format()
-    const bb = new ethers.Contract(baseBurnerAddress, bbAbi, signer)
+    const { address: bbAddress, abi: bbAbi } = await deployments.get('BaseBurner')
+    const bb = new ethers.Contract(bbAddress, bbAbi, signer)
 
     let tx
 
