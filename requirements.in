@@ -1,5 +1,6 @@
-black
-eth-brownie
+black>=22.10.0
+eth-brownie>=1.19.2
 flake8
 isort
 brownie-token-tester
+vyper>=0.3.7

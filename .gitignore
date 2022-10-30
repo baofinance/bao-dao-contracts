@@ -8,3 +8,9 @@ reports/
 mnemonic*.txt
 .env
 .rgignore
+artifacts/build-info
+artifacts/**/*.dbg.json
+deployments/localhost
+
+artifacts/
+deployments/
