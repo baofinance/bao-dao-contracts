@@ -170,7 +170,7 @@ def __init__(_lp_token: address, _admin: address):
     self.future_epoch_time = CRV20(CRV).future_epoch_time_write()
 
     lp_symbol: String[26] = ERC20Extended(_lp_token).symbol()
-    name: String[64] = concat("Curve.fi ", lp_symbol, " Gauge Deposit")
+    name: String[64] = concat("Bao Finance ", lp_symbol, " Gauge Deposit")
 
     NAME = name
     SYMBOL = concat(lp_symbol, "-gauge")

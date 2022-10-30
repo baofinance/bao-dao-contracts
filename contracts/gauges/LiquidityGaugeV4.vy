@@ -154,7 +154,7 @@ def __init__(_lp_token: address, _admin: address):
     self.admin = _admin
 
     symbol: String[26] = ERC20Extended(_lp_token).symbol()
-    self.name = concat("Curve.fi ", symbol, " Gauge Deposit")
+    self.name = concat("Bao Finance ", symbol, " Gauge Deposit")
     self.symbol = concat(symbol, "-gauge")
 
     self.period_timestamp[0] = block.timestamp
