@@ -1,4 +1,4 @@
-## How to deploy and setup veBAO
+## How to deploy and setup veBAO and BAO liquidity gauges
 
 
 ## Setup
