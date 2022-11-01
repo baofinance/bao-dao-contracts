@@ -9,7 +9,7 @@ from vyper.interfaces import ERC20
 implements: ERC20
 
 
-interface CRV20:
+interface BAO20:
     def future_epoch_time_write() -> uint256: nonpayable
     def rate() -> uint256: view
 
@@ -93,7 +93,7 @@ TOKENLESS_PRODUCTION: constant(uint256) = 40
 WEEK: constant(uint256) = 604800
 
 MINTER: constant(address) = 0xd061D61a4d941c39E5453435B6345Dc261C2fcE0
-CRV: constant(address) = 0xD533a949740bb3306d119CC777fa900bA034cd52
+BAO: constant(address) = 0xD533a949740bb3306d119CC777fa900bA034cd52
 VOTING_ESCROW: constant(address) = 0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2
 GAUGE_CONTROLLER: constant(address) = 0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB
 VEBOOST_PROXY: constant(address) = 0x8E0c00ed546602fD9927DF742bbAbF726D5B0d16
@@ -166,11 +166,11 @@ def __init__(_lp_token: address, _admin: address):
     self.admin = _admin
 
     self.period_timestamp[0] = block.timestamp
-    self.inflation_rate = CRV20(CRV).rate()
-    self.future_epoch_time = CRV20(CRV).future_epoch_time_write()
+    self.inflation_rate = BAO20(BAO).rate()
+    self.future_epoch_time = BAO20(BAO).future_epoch_time_write()
 
     lp_symbol: String[26] = ERC20Extended(_lp_token).symbol()
-    name: String[64] = concat("Curve.fi ", lp_symbol, " Gauge Deposit")
+    name: String[64] = concat("Bao.finance ", lp_symbol, " Gauge Deposit")
 
     NAME = name
     SYMBOL = concat(lp_symbol, "-gauge")
@@ -190,9 +190,9 @@ def integrate_checkpoint() -> uint256:
 @internal
 def _update_liquidity_limit(addr: address, l: uint256, L: uint256):
     """
-    @notice Calculate limits which depend on the amount of CRV token per-user.
+    @notice Calculate limits which depend on the amount of BAO token per-user.
             Effectively it calculates working balances to apply amplification
-            of CRV production by CRV
+            of BAO production by BAO
     @param addr User address
     @param l User's amount of liquidity (LP tokens)
     @param L Total amount of liquidity (LP tokens)
@@ -288,8 +288,8 @@ def _checkpoint(addr: address):
     new_rate: uint256 = rate
     prev_future_epoch: uint256 = self.future_epoch_time
     if prev_future_epoch >= _period_time:
-        self.future_epoch_time = CRV20(CRV).future_epoch_time_write()
-        new_rate = CRV20(CRV).rate()
+        self.future_epoch_time = BAO20(BAO).future_epoch_time_write()
+        new_rate = BAO20(BAO).rate()
         self.inflation_rate = new_rate
 
     if self.is_killed:
@@ -731,7 +731,7 @@ def deposit_reward_token(_reward_token: address, _amount: uint256):
 def set_killed(_is_killed: bool):
     """
     @notice Set the killed status for this contract
-    @dev When killed, the gauge always yields a rate of 0 and so cannot mint CRV
+    @dev When killed, the gauge always yields a rate of 0 and so cannot mint BAO
     @param _is_killed Killed status to set
     """
     assert msg.sender == self.admin
