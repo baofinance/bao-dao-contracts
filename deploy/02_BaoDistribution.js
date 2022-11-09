@@ -1,5 +1,5 @@
 const TREASURY = '0x3dFc49e5112005179Da613BdE5973229082dAc35'
-const MERKLE_ROOT = '0x41c02385a07002f9d8fd88c8fb950c308c6f7bf7c748b57ae9b892e291900363'
+const MERKLE_ROOT = '0x4ed873ef8243a2b4efe73caaffeec8c2577bbf26320a67dc8a8f9c7dab3cd4bd'
 
 module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   const { deployer } = await getNamedAccounts()

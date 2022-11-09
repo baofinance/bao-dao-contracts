@@ -52,11 +52,11 @@ controller, and transfer ownership to admin.
 
 TODO: figure out the weights forreal. I think the numbers are wrong!
 
-1. `hh bao:GaugeController:addGaugeType --name 'Ethereum Stable' --weight 500 # This becomes "--type 0"`
-2. `hh bao:GaugeController:addGaugeType --name 'Ethereum Crypto' --weight 500 # This becomes "--type 1"`
-3. `hh bao:GaugeController:addGauge --type 0 --weight 500 --gauge baoUSD-3CRV`
-4. `hh bao:GaugeController:addGauge --type 0 --weight 375 --gauge bSTBL-DAI`
-5. `hh bao:GaugeController:addGauge --type 1 --weight 125 --gauge BAO-ETH`
+1. `hh bao:GaugeController:addGaugeType --name 'Ethereum Stable' --weight 1000000000000000000 # This becomes "--type 0"`
+2. `hh bao:GaugeController:addGaugeType --name 'Ethereum Crypto' --weight 1000000000000000000 # This becomes "--type 1"`
+3. `hh bao:GaugeController:addGauge --type 0 --weight 1000000000000000000 --gauge baoUSD-3CRV`
+4. `hh bao:GaugeController:addGauge --type 0 --weight 1000000000000000000 --gauge bSTBL-DAI`
+5. `hh bao:GaugeController:addGauge --type 1 --weight 1000000000000000000 --gauge BAO-ETH`
 6. `hh bao:GaugeController:changeOwner --admin $TREASURY`
 
 
