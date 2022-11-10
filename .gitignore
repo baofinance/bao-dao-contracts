@@ -7,10 +7,10 @@ reports/
 .hypothesis
 mnemonic*.txt
 .env
-.rgignore
 artifacts/build-info
 artifacts/**/*.dbg.json
 deployments/localhost
-
 artifacts/
 deployments/
+node_modules
+reports/

@@ -22,8 +22,8 @@ class StateMachine:
     st_gauge_weight = strategy("uint", min_value=10 ** 17, max_value=10 ** 19)
     st_type_weight = strategy("uint", min_value=10 ** 17, max_value=10 ** 19)
 
-    def __init__(self, LiquidityGauge, accounts, gauge_controller, mock_lp_token, minter):
-        self.LiquidityGauge = LiquidityGauge
+    def __init__(self, LiquidityGaugeV3, accounts, gauge_controller, mock_lp_token, minter):
+        self.LiquidityGauge = LiquidityGaugeV3
         self.accounts = accounts
 
         self.lp_token = mock_lp_token
@@ -105,5 +105,5 @@ class StateMachine:
             assert self.controller.gauge_relative_weight(gauge) == expected
 
 
-def test_gauge(state_machine, LiquidityGauge, accounts, gauge_controller, mock_lp_token, minter):
-    state_machine(StateMachine, LiquidityGauge, accounts, gauge_controller, mock_lp_token, minter)
+def test_gauge(state_machine, LiquidityGaugeV3, accounts, gauge_controller, mock_lp_token, minter):
+    state_machine(StateMachine, LiquidityGaugeV3, accounts, gauge_controller, mock_lp_token, minter)

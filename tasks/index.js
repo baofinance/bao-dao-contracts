@@ -1,3 +1,4 @@
+require('./Network.js')
 require('./GaugeController.js')
 require('./ERC20BAO.js')
 require('./VotingEscrow.js')

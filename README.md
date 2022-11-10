@@ -45,7 +45,7 @@ brownie test tests/integration
 
 ## Deployment
 
-See the [deployment documentation](scripts/deployment/README.md) for detailed information on how to deploy Bao Finance Governance.
+See the [deployment documentation](README-DEPLOY.md) for detailed information on how to deploy Bao Finance Governance.
 
 ## Audits and Security
 
