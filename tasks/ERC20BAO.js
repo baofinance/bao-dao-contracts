@@ -38,7 +38,12 @@ task("bao:ERC20BAO:transfer", "Send BAOv2 from a named account to a deployed con
     const { address: baoAddress, abi: baoAbi } = await deployments.get('ERC20BAO')
     const bao = new ethers.Contract(baoAddress, baoAbi, signer)
 
-    const { address: toAddress } = await deployments.get(taskArgs.to)
+    let toAddress
+    try {
+      toAddress = (await deployments.get(taskArgs.to)).address
+    } catch {
+      toAddress = taskArgs.to
+    }
 
     console.log("Sending BAOv2...")
     console.log(`  _old_ balance:from:${taskArgs.from}`, (await bao.balanceOf(signer.address)).toString())
