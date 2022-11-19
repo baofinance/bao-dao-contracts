@@ -37,22 +37,8 @@ of BAO as BAOv2 tokens, reduced by a factor of 1000.
 2. `hh bao:ERC20BAO:transfer --from deployer --to Swapper --amount 166850344226331394130869546`
 3. `hh bao:ERC20BAO:transfer --from deployer --to $TREASURY --amount 92538492678164717714597057`
 
-### Step 3 - Setup the BAOv2 token
 
-Set the minter as the minter contract and change the admin.
-
-1. `hh bao:ERC20BAO:changeOwner --admin $TREASURY # calls set_minter and then set_admin`
-
-
-### Step 4 - Setup the Voting Escrow token
-
-Commit then apply the smart wallet checker, the distribution contract, and 
-the ownership of the VE token.
-
-1. `hh bao:VotingEscrow:changeOwner --admin $TREASURY`
-
-
-### Step 5 - Deploy "deployment phase 2" contracts
+### Step 3 - Deploy "deployment phase 2" contracts
 
 Phase 2 contracts:
 * GaugeController
@@ -62,6 +48,19 @@ Phase 2 contracts:
 * SmartWalletWhitelist
 
 1. Run `hh deploy --tags Phase2`.
+
+### Step 4 - Setup the BAOv2 token
+
+Set the minter as the minter contract and change the admin.
+
+1. `hh bao:ERC20BAO:changeOwner --admin $TREASURY # calls set_minter and then set_admin`
+
+### Step 5 - Setup the Voting Escrow token
+
+Commit then apply the smart wallet checker, the distribution contract, and 
+the ownership of the VE token.
+
+1. `hh bao:VotingEscrow:changeOwner --admin $TREASURY`
 
 
 ### Step 6 - Setup the FeeDistributor
@@ -80,6 +79,7 @@ TODO: exactly who are the emergency and recovery addresses? Are they a separate 
 
 1. `hh bao:BaseBurner:changeOwner --admin $TREASURY --emergency $TREASURY --recovery $TREASURY`
 
+### Deploy BAOv2-ETH UNI V2 LP
 
 ### Step 8 - Deploy "deployment phase 3" contracts
 
@@ -111,3 +111,7 @@ Transfer ownership from the deployer to the treasury.
 1. `hh bao:LiquidityGaugeV3:changeOwner --admin $TREASURY --gauge bSTBL-DAI`
 2. `hh bao:LiquidityGaugeV3:changeOwner --admin $TREASURY --gauge BAO-ETH`
 3. `hh bao:LiquidityGaugeV3:changeOwner --admin $TREASURY --gauge baoUSD-3CRV`
+
+### Treasury must send a call to accept ownership of:
+-BaseBurner
+-All Liquidity gauge contracts
