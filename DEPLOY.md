@@ -11,11 +11,20 @@
 Finally:
 
 * Run an `anvil` fork of Ethereum mainnet to give hardhat a working `--network localhost`!
+    * Example: `anvil --fork-url https://mainnet.infura.io/v3/$INFURA_ID --chain-id 1 --fork-block-number=16006811`
 
 
-### Step 1 - Deploy all the contracts
+### Step 1 - Deploy "deploment phase 1" contracts
 
-* Run `hh --network localhost deploy` and confirm all contracts get deployed to your mainnet fork.
+This phase of deployment deploys all of the contracts necessary to send BAOv2 around.
+
+The phase 1 contracts:
+* ERC20BAO (BAOv2)
+* VotingEscrow (veBAO)
+* BaoDistribution
+* Swapper
+
+1. Run `hh deploy --tags Phase1`.
 
 
 ### Step 2 - Fund the distribution and swapper contracts
@@ -43,16 +52,16 @@ the ownership of the VE token.
 1. `hh bao:VotingEscrow:changeOwner --admin $TREASURY`
 
 
-### Step 5 - Setup the GaugeController:
+### Step 5 - Deploy "deployment phase 2" contracts
 
-Add new gauge type, add existing gauges to 
-controller, and transfer ownership to admin.
+Phase 2 contracts:
+* GaugeController
+* Minter
+* FeeDistributor
+* BaseBurner
+* SmartWalletWhitelist
 
-1. `hh bao:GaugeController:addGaugeType --name 'Ethereum' --weight 1000000000000000000 # This becomes "--type 0"`
-3. `hh bao:GaugeController:addGauge --type 0 --weight 5000000000000000000 --gauge baoUSD-3CRV`
-4. `hh bao:GaugeController:addGauge --type 0 --weight 3000000000000000000 --gauge bSTBL-DAI`
-5. `hh bao:GaugeController:addGauge --type 0 --weight 2000000000000000000 --gauge BAO-ETH`
-6. `hh bao:GaugeController:changeOwner --admin $TREASURY`
+1. Run `hh deploy --tags Phase2`.
 
 
 ### Step 6 - Setup the FeeDistributor
@@ -72,7 +81,30 @@ TODO: exactly who are the emergency and recovery addresses? Are they a separate 
 1. `hh bao:BaseBurner:changeOwner --admin $TREASURY --emergency $TREASURY --recovery $TREASURY`
 
 
-### Step 8 - Setup the Gauges (LiquidityGaugeV3)
+### Step 8 - Deploy "deployment phase 3" contracts
+
+Phase 2 contracts:
+* LiquidityGaugeV3
+    * baoUSD-3CRV
+    * bSTBL-DAI
+    * BAO-ETH
+
+1. Run `hh deploy --tags Phase3`.
+
+
+### Step 9 - Setup the GaugeController:
+
+Add new gauge type, add existing gauges to 
+controller, and transfer ownership to admin.
+
+1. `hh bao:GaugeController:addGaugeType --name 'Ethereum' --weight 1000000000000000000 # This becomes "--type 0"`
+3. `hh bao:GaugeController:addGauge --type 0 --weight 5000000000000000000 --gauge baoUSD-3CRV`
+4. `hh bao:GaugeController:addGauge --type 0 --weight 3000000000000000000 --gauge bSTBL-DAI`
+5. `hh bao:GaugeController:addGauge --type 0 --weight 2000000000000000000 --gauge BAO-ETH`
+6. `hh bao:GaugeController:changeOwner --admin $TREASURY`
+
+
+### Step 10 - Setup the Gauges (LiquidityGaugeV3)
 
 Transfer ownership from the deployer to the treasury.
 
