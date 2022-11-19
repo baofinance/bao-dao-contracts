@@ -1,0 +1,113 @@
+{
+  "address": "0x4007d1Dfacca4e636032FC413B73CF47c3f9cDb6",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_baoV2",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "baoV1",
+      "outputs": [
+        {
+          "internalType": "contract ERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "baoV2",
+      "outputs": [
+        {
+          "internalType": "contract IERC20BAO",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "convertV1",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xd79f44667a2527cb68e1e74088bea2654f38996abb96062ee32171f9ae253f4f",
+  "receipt": {
+    "to": null,
+    "from": "0x632e6920B7c443D92052442e0F230355099a9989",
+    "contractAddress": "0x4007d1Dfacca4e636032FC413B73CF47c3f9cDb6",
+    "transactionIndex": 8,
+    "gasUsed": "243371",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x763a8f27815b2a3dddcb357f35142330870ca9bb224cd6ed30a44530e27615d1",
+    "transactionHash": "0xd79f44667a2527cb68e1e74088bea2654f38996abb96062ee32171f9ae253f4f",
+    "logs": [],
+    "blockNumber": 16007222,
+    "cumulativeGasUsed": "1266301",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x7d2153fa1A3aA94B3E82639c81f1AC7021b94B8F"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "ff16de1008cf78d01b0065176659d42f",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_baoV2\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"baoV1\",\"outputs\":[{\"internalType\":\"contract ERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"baoV2\",\"outputs\":[{\"internalType\":\"contract IERC20BAO\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"convertV1\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Swapper.sol\":\"Swapper\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/IERC20BAO.sol\":{\"content\":\"pragma solidity ^0.8.13;\\n\\ninterface IERC20BAO {\\n    function balanceOf(address _addr) external view returns(uint256);\\n    function update_mining_parameters() external;\\n    function start_epoch_time_write() external;\\n    function future_epoch_time_write() external;\\n    function available_supply() external;\\n    function mintable_in_timeframe(uint256 start,uint256 end) external;\\n    function set_minters(address _minter, address _swapper) external;\\n    function set_admin(address _admin) external;\\n    function transfer(address _to, uint256 _value) external;\\n    function transferFrom(address _from, address _to, uint256 _value) external;\\n    function approve(address _spender, uint256 _value) external;\\n    function mint(address _to, uint256 _value) external returns (bool);\\n    function burn(uint256 _value) external;\\n}\\n\",\"keccak256\":\"0x3b85602b73d42c15efd195e51190c5692aa1b65c6a51ba03a52baf6977f2a304\"},\"contracts/Swapper.sol\":{\"content\":\"// SPDX-License-Identifier: UNLICENSED\\npragma solidity ^0.8.13;\\n\\nimport \\\"./IERC20BAO.sol\\\";\\nimport \\\"../node_modules/solmate/src/tokens/ERC20.sol\\\";\\nimport \\\"../node_modules/solmate/src/utils/ReentrancyGuard.sol\\\";\\n\\ncontract Swapper is ReentrancyGuard {\\n    ERC20 public immutable baoV1;\\n    IERC20BAO public immutable baoV2;\\n\\n    constructor(address _baoV2) {\\n        // BaoV1 Token is a hardcoded constant\\n        baoV1 = ERC20(0x374CB8C27130E2c9E04F44303f3c8351B9De61C1);\\n        baoV2 = IERC20BAO(_baoV2);\\n    }\\n\\n    function convertV1(address _to, uint256 _amount) external nonReentrant {\\n        baoV1.transferFrom(msg.sender, address(0x000000000000000000000000000000000000dEaD), _amount); // Burn BaoV1\\n        baoV2.transfer(_to, _amount / 1000); // BaoV2's supply is reduced by a factor of 1000, FLOOR DIV\\n    }\\n}\\n\",\"keccak256\":\"0x8bd2539517dc064cc60d7218c2cd4275cf15f1210a459c7b0a91fccb9d425781\",\"license\":\"UNLICENSED\"},\"node_modules/solmate/src/tokens/ERC20.sol\":{\"content\":\"// SPDX-License-Identifier: AGPL-3.0-only\\npragma solidity >=0.8.0;\\n\\n/// @notice Modern and gas efficient ERC20 + EIP-2612 implementation.\\n/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/tokens/ERC20.sol)\\n/// @author Modified from Uniswap (https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2ERC20.sol)\\n/// @dev Do not manually set balances without updating totalSupply, as the sum of all user balances must not exceed it.\\nabstract contract ERC20 {\\n    /*//////////////////////////////////////////////////////////////\\n                                 EVENTS\\n    //////////////////////////////////////////////////////////////*/\\n\\n    event Transfer(address indexed from, address indexed to, uint256 amount);\\n\\n    event Approval(address indexed owner, address indexed spender, uint256 amount);\\n\\n    /*//////////////////////////////////////////////////////////////\\n                            METADATA STORAGE\\n    //////////////////////////////////////////////////////////////*/\\n\\n    string public name;\\n\\n    string public symbol;\\n\\n    uint8 public immutable decimals;\\n\\n    /*//////////////////////////////////////////////////////////////\\n                              ERC20 STORAGE\\n    //////////////////////////////////////////////////////////////*/\\n\\n    uint256 public totalSupply;\\n\\n    mapping(address => uint256) public balanceOf;\\n\\n    mapping(address => mapping(address => uint256)) public allowance;\\n\\n    /*//////////////////////////////////////////////////////////////\\n                            EIP-2612 STORAGE\\n    //////////////////////////////////////////////////////////////*/\\n\\n    uint256 internal immutable INITIAL_CHAIN_ID;\\n\\n    bytes32 internal immutable INITIAL_DOMAIN_SEPARATOR;\\n\\n    mapping(address => uint256) public nonces;\\n\\n    /*//////////////////////////////////////////////////////////////\\n                               CONSTRUCTOR\\n    //////////////////////////////////////////////////////////////*/\\n\\n    constructor(\\n        string memory _name,\\n        string memory _symbol,\\n        uint8 _decimals\\n    ) {\\n        name = _name;\\n        symbol = _symbol;\\n        decimals = _decimals;\\n\\n        INITIAL_CHAIN_ID = block.chainid;\\n        INITIAL_DOMAIN_SEPARATOR = computeDomainSeparator();\\n    }\\n\\n    /*//////////////////////////////////////////////////////////////\\n                               ERC20 LOGIC\\n    //////////////////////////////////////////////////////////////*/\\n\\n    function approve(address spender, uint256 amount) public virtual returns (bool) {\\n        allowance[msg.sender][spender] = amount;\\n\\n        emit Approval(msg.sender, spender, amount);\\n\\n        return true;\\n    }\\n\\n    function transfer(address to, uint256 amount) public virtual returns (bool) {\\n        balanceOf[msg.sender] -= amount;\\n\\n        // Cannot overflow because the sum of all user\\n        // balances can't exceed the max uint256 value.\\n        unchecked {\\n            balanceOf[to] += amount;\\n        }\\n\\n        emit Transfer(msg.sender, to, amount);\\n\\n        return true;\\n    }\\n\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 amount\\n    ) public virtual returns (bool) {\\n        uint256 allowed = allowance[from][msg.sender]; // Saves gas for limited approvals.\\n\\n        if (allowed != type(uint256).max) allowance[from][msg.sender] = allowed - amount;\\n\\n        balanceOf[from] -= amount;\\n\\n        // Cannot overflow because the sum of all user\\n        // balances can't exceed the max uint256 value.\\n        unchecked {\\n            balanceOf[to] += amount;\\n        }\\n\\n        emit Transfer(from, to, amount);\\n\\n        return true;\\n    }\\n\\n    /*//////////////////////////////////////////////////////////////\\n                             EIP-2612 LOGIC\\n    //////////////////////////////////////////////////////////////*/\\n\\n    function permit(\\n        address owner,\\n        address spender,\\n        uint256 value,\\n        uint256 deadline,\\n        uint8 v,\\n        bytes32 r,\\n        bytes32 s\\n    ) public virtual {\\n        require(deadline >= block.timestamp, \\\"PERMIT_DEADLINE_EXPIRED\\\");\\n\\n        // Unchecked because the only math done is incrementing\\n        // the owner's nonce which cannot realistically overflow.\\n        unchecked {\\n            address recoveredAddress = ecrecover(\\n                keccak256(\\n                    abi.encodePacked(\\n                        \\\"\\\\x19\\\\x01\\\",\\n                        DOMAIN_SEPARATOR(),\\n                        keccak256(\\n                            abi.encode(\\n                                keccak256(\\n                                    \\\"Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)\\\"\\n                                ),\\n                                owner,\\n                                spender,\\n                                value,\\n                                nonces[owner]++,\\n                                deadline\\n                            )\\n                        )\\n                    )\\n                ),\\n                v,\\n                r,\\n                s\\n            );\\n\\n            require(recoveredAddress != address(0) && recoveredAddress == owner, \\\"INVALID_SIGNER\\\");\\n\\n            allowance[recoveredAddress][spender] = value;\\n        }\\n\\n        emit Approval(owner, spender, value);\\n    }\\n\\n    function DOMAIN_SEPARATOR() public view virtual returns (bytes32) {\\n        return block.chainid == INITIAL_CHAIN_ID ? INITIAL_DOMAIN_SEPARATOR : computeDomainSeparator();\\n    }\\n\\n    function computeDomainSeparator() internal view virtual returns (bytes32) {\\n        return\\n            keccak256(\\n                abi.encode(\\n                    keccak256(\\\"EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)\\\"),\\n                    keccak256(bytes(name)),\\n                    keccak256(\\\"1\\\"),\\n                    block.chainid,\\n                    address(this)\\n                )\\n            );\\n    }\\n\\n    /*//////////////////////////////////////////////////////////////\\n                        INTERNAL MINT/BURN LOGIC\\n    //////////////////////////////////////////////////////////////*/\\n\\n    function _mint(address to, uint256 amount) internal virtual {\\n        totalSupply += amount;\\n\\n        // Cannot overflow because the sum of all user\\n        // balances can't exceed the max uint256 value.\\n        unchecked {\\n            balanceOf[to] += amount;\\n        }\\n\\n        emit Transfer(address(0), to, amount);\\n    }\\n\\n    function _burn(address from, uint256 amount) internal virtual {\\n        balanceOf[from] -= amount;\\n\\n        // Cannot underflow because a user's balance\\n        // will never be larger than the total supply.\\n        unchecked {\\n            totalSupply -= amount;\\n        }\\n\\n        emit Transfer(from, address(0), amount);\\n    }\\n}\\n\",\"keccak256\":\"0xcdfd8db76b2a3415620e4d18cc5545f3d50de792dbf2c3dd5adb40cbe6f94b10\",\"license\":\"AGPL-3.0-only\"},\"node_modules/solmate/src/utils/ReentrancyGuard.sol\":{\"content\":\"// SPDX-License-Identifier: AGPL-3.0-only\\npragma solidity >=0.8.0;\\n\\n/// @notice Gas optimized reentrancy protection for smart contracts.\\n/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/ReentrancyGuard.sol)\\n/// @author Modified from OpenZeppelin (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol)\\nabstract contract ReentrancyGuard {\\n    uint256 private locked = 1;\\n\\n    modifier nonReentrant() virtual {\\n        require(locked == 1, \\\"REENTRANCY\\\");\\n\\n        locked = 2;\\n\\n        _;\\n\\n        locked = 1;\\n    }\\n}\\n\",\"keccak256\":\"0xb282dd78aa7375d6b200b9a5d8dd214b2e5df1004f8217a4b4c2b07f0c5bfd01\",\"license\":\"AGPL-3.0-only\"}},\"version\":1}",
+  "bytecode": "0x60c0604052600160005534801561001557600080fd5b506040516103c13803806103c18339810160408190526100349161005d565b73374cb8c27130e2c9e04f44303f3c8351b9de61c16080526001600160a01b031660a05261008d565b60006020828403121561006f57600080fd5b81516001600160a01b038116811461008657600080fd5b9392505050565b60805160a0516103036100be6000396000818160a301526101b10152600081816060015261013101526103036000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063a4f3f05b14610046578063d9f55a971461005b578063eb4b24db1461009e575b600080fd5b61005961005436600461024a565b6100c5565b005b6100827f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b03909116815260200160405180910390f35b6100827f000000000000000000000000000000000000000000000000000000000000000081565b6000546001146101085760405162461bcd60e51b815260206004820152600a6024820152695245454e5452414e435960b01b604482015260640160405180910390fd5b60026000556040516323b872dd60e01b815233600482015261dead6024820152604481018290527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316906323b872dd906064016020604051808303816000875af1158015610182573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101a69190610282565b506001600160a01b037f00000000000000000000000000000000000000000000000000000000000000001663a9059cbb836101e36103e8856102ab565b6040516001600160e01b031960e085901b1681526001600160a01b0390921660048301526024820152604401600060405180830381600087803b15801561022957600080fd5b505af115801561023d573d6000803e3d6000fd5b5050600160005550505050565b6000806040838503121561025d57600080fd5b82356001600160a01b038116811461027457600080fd5b946020939093013593505050565b60006020828403121561029457600080fd5b815180151581146102a457600080fd5b9392505050565b6000826102c857634e487b7160e01b600052601260045260246000fd5b50049056fea2646970667358221220c2933cbc0c99f610a5c1ca2d5225f9f79fd0fc23890673ccd87d92412d3b2daf64736f6c63430008110033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c8063a4f3f05b14610046578063d9f55a971461005b578063eb4b24db1461009e575b600080fd5b61005961005436600461024a565b6100c5565b005b6100827f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b03909116815260200160405180910390f35b6100827f000000000000000000000000000000000000000000000000000000000000000081565b6000546001146101085760405162461bcd60e51b815260206004820152600a6024820152695245454e5452414e435960b01b604482015260640160405180910390fd5b60026000556040516323b872dd60e01b815233600482015261dead6024820152604481018290527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316906323b872dd906064016020604051808303816000875af1158015610182573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101a69190610282565b506001600160a01b037f00000000000000000000000000000000000000000000000000000000000000001663a9059cbb836101e36103e8856102ab565b6040516001600160e01b031960e085901b1681526001600160a01b0390921660048301526024820152604401600060405180830381600087803b15801561022957600080fd5b505af115801561023d573d6000803e3d6000fd5b5050600160005550505050565b6000806040838503121561025d57600080fd5b82356001600160a01b038116811461027457600080fd5b946020939093013593505050565b60006020828403121561029457600080fd5b815180151581146102a457600080fd5b9392505050565b6000826102c857634e487b7160e01b600052601260045260246000fd5b50049056fea2646970667358221220c2933cbc0c99f610a5c1ca2d5225f9f79fd0fc23890673ccd87d92412d3b2daf64736f6c63430008110033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 2479,
+        "contract": "contracts/Swapper.sol:Swapper",
+        "label": "locked",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
