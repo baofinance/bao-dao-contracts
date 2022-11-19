@@ -21,5 +21,5 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   // TODO: after this is deployed, change the owner to the dao's multisig.
 }
 
-module.exports.tags = ['BaseBurner', 'Phase1']
+module.exports.tags = ['BaseBurner', 'Phase2']
 module.exports.dependencies = ['FeeDistributor']

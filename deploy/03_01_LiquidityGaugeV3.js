@@ -19,7 +19,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
     from: deployer,
     contract: 'LiquidityGaugeV3',
     args: ['0x0fafafd3c393ead5f5129cfc7e0e12367088c473', minter_address, admin],
-    gasLimit: 4000000,
+    //gasLimit: 4000000,
     log: true,
   })
 
@@ -28,7 +28,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
     from: deployer,
     contract: 'LiquidityGaugeV3',
     args: ['0x7657ceb382013f1ce9ac7b08dd8db4f28d3a7538', minter_address, admin],
-    gasLimit: 4000000,
+    //gasLimit: 4000000,
     log: true,
   })
 
@@ -37,12 +37,12 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
     from: deployer,
     contract: 'LiquidityGaugeV3',
     args: ['0x9973bb0fe5f8df5de730776df09e946c74254fb3', minter_address, admin],
-    gasLimit: 4000000,
+    //gasLimit: 4000000,
     log: true,
   })
 
   // TODO: after this is deployed, change the admin to the dao's multisig.
 }
 
-module.exports.tags = ['LiquidityGaugeV3', 'Phase2']
+module.exports.tags = ['LiquidityGaugeV3', 'Phase3']
 module.exports.dependencies = ['Minter']

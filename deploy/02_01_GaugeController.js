@@ -11,5 +11,5 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   })
 }
 
-module.exports.tags = ['GaugeController', 'Phase1']
+module.exports.tags = ['GaugeController', 'Phase2']
 module.exports.dependencies = ['BAOv2', 'veBAO']
