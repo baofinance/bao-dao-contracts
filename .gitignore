@@ -14,3 +14,4 @@ artifacts/
 deployments/
 node_modules
 reports/
+cache/
