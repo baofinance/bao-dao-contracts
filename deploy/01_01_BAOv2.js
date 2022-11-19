@@ -4,7 +4,7 @@ module.exports = async ({getNamedAccounts, deployments}) => {
 
   await deploy('ERC20BAO', {
     from: deployer,
-    args: ['BAO DAO Token', 'BAOv2', 18],
+    args: ['Bao Token V2', 'BAO', 18],
     log: true,
   })
 }
