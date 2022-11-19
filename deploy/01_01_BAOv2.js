@@ -9,4 +9,4 @@ module.exports = async ({getNamedAccounts, deployments}) => {
   })
 }
 
-module.exports.tags = ['BAOv2']
+module.exports.tags = ['BAOv2', 'Phase1']

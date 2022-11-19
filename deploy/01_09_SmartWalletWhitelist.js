@@ -11,5 +11,5 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   })
 }
 
-module.exports.tags = ['SmartWalletWhitelist']
+module.exports.tags = ['SmartWalletWhitelist', 'Phase1']
 module.exports.dependencies = ['VotingEscrow', 'BaoDistribution']

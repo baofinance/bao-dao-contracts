@@ -22,5 +22,5 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   // TODO: after this is deployed, change the admin to the dao's multisig.
 }
 
-module.exports.tags = ['FeeDistributor']
+module.exports.tags = ['FeeDistributor', 'Phase1']
 module.exports.dependencies = ['BAOv2', 'VotingEscrow']

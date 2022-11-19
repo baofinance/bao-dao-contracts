@@ -10,9 +10,9 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   const admin = deployer
   //const admin = TREASURY
 
-  const provider = await ethers.getDefaultProvider()
-  const block = await provider.getBlock()
-  const start_time = block.timestamp
+  //const provider = await ethers.getDefaultProvider()
+  //const block = await provider.getBlock()
+  //const start_time = block.timestamp
 
   // baoUSD-3CRV
   const deploy1 = await deployments.deploy('LiquidityGaugeV3_baoUSD-3CRV', {
@@ -44,5 +44,5 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   // TODO: after this is deployed, change the admin to the dao's multisig.
 }
 
-module.exports.tags = ['LiquidityGaugeV3', 'Minter']
-module.exports.dependencies = ['BaseBurner']
+module.exports.tags = ['LiquidityGaugeV3', 'Phase2']
+module.exports.dependencies = ['Minter']
