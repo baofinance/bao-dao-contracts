@@ -26,8 +26,7 @@ of BAO as BAOv2 tokens, reduced by a factor of 1000.
 
 1. `hh bao:ERC20BAO:transfer --from deployer --to BaoDistribution --amount 832364383418932981187447848`
 2. `hh bao:ERC20BAO:transfer --from deployer --to Swapper --amount 166850344226331394130869546`
-
-TODO - make a task for transferring `92,538,492.678164717714597057` BAOv2 tokens to [treasury](https://etherscan.io/address/0x3dFc49e5112005179Da613BdE5973229082dAc35) to lock for 4 years among guardians/contributors
+3. `hh bao:ERC20BAO:transfer --from deployer --to $TREASURY --amount 92538492678164717714597057`
 
 ### Step 3 - Setup the BAOv2 token
 
