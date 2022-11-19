@@ -24,11 +24,10 @@ The Distribution contract gets the total amount of locked BAO in BAOv2 tokens,
 reduced by a factor of 1000. The Swapper contract gets the circulating supply
 of BAO as BAOv2 tokens, reduced by a factor of 1000.
 
-TODO: these numbers are rough estimates :).
+1. `hh bao:ERC20BAO:transfer --from deployer --to BaoDistribution --amount 832364383418932981187447848`
+2. `hh bao:ERC20BAO:transfer --from deployer --to Swapper --amount 166850344226331394130869546`
 
-1. `hh bao:ERC20BAO:transfer --from deployer --to BaoDistribution --amount 922240000000000000000000000`
-2. `hh bao:ERC20BAO:transfer --from deployer --to Swapper --amount 168740000000000000000000000`
-
+TODO - make a task for transferring `92,538,492.678164717714597057` BAOv2 tokens to [treasury](https://etherscan.io/address/0x3dFc49e5112005179Da613BdE5973229082dAc35) to lock for 4 years among guardians/contributors
 
 ### Step 3 - Setup the BAOv2 token
 
@@ -47,16 +46,13 @@ the ownership of the VE token.
 
 ### Step 5 - Setup the GaugeController:
 
-Add new gauge types (one for crypto, one for stable), add existing gauges to 
+Add new gauge type, add existing gauges to 
 controller, and transfer ownership to admin.
 
-TODO: figure out the weights forreal. I think the numbers are wrong!
-
-1. `hh bao:GaugeController:addGaugeType --name 'Ethereum Stable' --weight 1000000000000000000 # This becomes "--type 0"`
-2. `hh bao:GaugeController:addGaugeType --name 'Ethereum Crypto' --weight 1000000000000000000 # This becomes "--type 1"`
-3. `hh bao:GaugeController:addGauge --type 0 --weight 1000000000000000000 --gauge baoUSD-3CRV`
-4. `hh bao:GaugeController:addGauge --type 0 --weight 1000000000000000000 --gauge bSTBL-DAI`
-5. `hh bao:GaugeController:addGauge --type 1 --weight 1000000000000000000 --gauge BAO-ETH`
+1. `hh bao:GaugeController:addGaugeType --name 'Ethereum' --weight 1000000000000000000 # This becomes "--type 0"`
+3. `hh bao:GaugeController:addGauge --type 0 --weight 5000000000000000000 --gauge baoUSD-3CRV`
+4. `hh bao:GaugeController:addGauge --type 0 --weight 3000000000000000000 --gauge bSTBL-DAI`
+5. `hh bao:GaugeController:addGauge --type 0 --weight 2000000000000000000 --gauge BAO-ETH`
 6. `hh bao:GaugeController:changeOwner --admin $TREASURY`
 
 
