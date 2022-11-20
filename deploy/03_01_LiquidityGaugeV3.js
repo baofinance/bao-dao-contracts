@@ -36,7 +36,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   const deploy3 = await deployments.deploy('LiquidityGaugeV3_BAO-ETH', {
     from: deployer,
     contract: 'LiquidityGaugeV3',
-    args: ['0x9973bb0fe5f8df5de730776df09e946c74254fb3', minter_address, admin],
+    args: ['0x8d7443530d6B03c35C9291F9E43b1D18B9cFa084', minter_address, admin],
     //gasLimit: 4000000,
     log: true,
   })
