@@ -1,8 +1,10 @@
 task("bao:Network:fastForward", "Fast forward the forked network by a given number of seconds.")
+  .addOptionalParam("seconds", "the number of seconds to fast forward", "86400")
   .setAction(async (taskArgs, { network }) => {
-    await network.provider.send("evm_increaseTime", [1209600]);
+    const seconds = parseInt(taskArgs.seconds)
+    await network.provider.send("evm_increaseTime", [seconds]);
     await network.provider.send("evm_mine");
-    console.log("Time traveled!");
+    console.log(`Time traveled ${(seconds / 86400).toFixed(4)} days!`);
   })
 
 
