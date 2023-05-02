@@ -217,10 +217,16 @@ module.exports = {
         settings: {
           optimizer: { enabled: true, runs: 200, }, },
       },
+      {
+        version: "0.4.7",
+        settings: {
+          optimizer: { enabled: true, runs: 200, }, },
+      },
     ],
   },
   vyper: {
     compilers: [
+      { version: "0.3.7", },
       { version: "0.3.3", },
       { version: "0.3.1", },
       { version: "0.2.16", },
