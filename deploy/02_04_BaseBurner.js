@@ -14,7 +14,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
 
   const deploy = await deployments.deploy('BaseBurner', {
     from: deployer,
-    args: [feeDistributor_address, recoveryAddress, owner, emergencyOwner],
+    args: [feeDistributor_address, recoveryAddress, "0x632e6920B7c443D92052442e0F230355099a9989", emergencyOwner],
     log: true,
   })
 

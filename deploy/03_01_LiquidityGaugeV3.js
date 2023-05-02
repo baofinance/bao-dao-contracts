@@ -7,8 +7,9 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   const { address: minter_address } = await deployments.get('Minter')
 
   // FIXME
-  const admin = deployer
+  //const admin = deployer
   //const admin = TREASURY
+  const admin = '0x632e6920B7c443D92052442e0F230355099a9989'
 
   //const provider = await ethers.getDefaultProvider()
   //const block = await provider.getBlock()

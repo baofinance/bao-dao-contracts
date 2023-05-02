@@ -8,7 +8,7 @@ module.exports = async ({getNamedAccounts, deployments, ethers}) => {
   const { address: vebao_address } = await deployments.get('VotingEscrow')
 
   // FIXME
-  const admin = deployer
+  const admin = "0x632e6920B7c443D92052442e0F230355099a9989"
   //const admin = TREASURY
 
   const returnAddress = TREASURY
