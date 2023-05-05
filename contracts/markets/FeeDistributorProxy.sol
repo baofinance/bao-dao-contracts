@@ -15,8 +15,8 @@ contract FeeDistributorProxy {
     ERC20 public baoUSD = ERC20(0x7945b0A6674b175695e5d1D08aE1e6F13744Abb0);
 
     address public outputX = 0x3dCe48CfC0bEA704ec1640b34b33eC55F97D3056;
-    address public outputY = 0x00000000000000000000000000000000deadbeef;
-    address public outputX = 0x00000000000000000000000000000000cafebabe;
+    address public outputY = 0x00000000000000000000000000000000DeaDBeef;
+    address public outputZ = 0x00000000000000000000000000000000cafebabe;
 
     constructor(address _admin, uint _x, uint _y, uint _z) public {
         admin = _admin;
@@ -42,7 +42,7 @@ contract FeeDistributorProxy {
 
     // Withdraw *the full token balance* held by this contract to some address.
     function withdraw(ERC20 _token, address _output) external {
-        uint balance = _token.balanceOf(address(this))
+        uint balance = _token.balanceOf(address(this));
         withdraw(_token, _output, balance);
     }
 
@@ -72,18 +72,18 @@ contract FeeDistributorProxy {
 
     // Split a set amount of the held funds and send it.
     // x+y+z have to add up to "one" (1e18) before you call this.
-    function splitFunds(uint _amount) external {
+    function splitFunds(uint _amount) public {
         _onlyAdmin();
-        require(_x+_y+_z == 1000000000000000000, "x+y+z != 100%");
+        require(x+y+z == 1000000000000000000, "x+y+z != 100%");
         require(_amount <= baoUSD.balanceOf(address(this)), "not enough funds");
 
-        uint amountX = (_amount * _x) / 10**18;
-        uint amountY = (_amount * _y) / 10**18;
-        uint amountZ = (_amount * _z) / 10**18;
+        uint amountX = (_amount * x) / 10**18;
+        uint amountY = (_amount * y) / 10**18;
+        uint amountZ = (_amount * z) / 10**18;
 
-        baoUSD.transfer(amountX, outputX);
-        baoUSD.transfer(amountY, outputY);
-        baoUSD.transfer(amountZ, outputZ);
+        baoUSD.transfer(outputX, amountX);
+        baoUSD.transfer(outputY, amountY);
+        baoUSD.transfer(outputZ, amountZ);
     }
 
     // Split the entire amount of held funds up.
