@@ -22,8 +22,8 @@ contract FeeDistributorPropercentXpercentY {
 
     address public immutable recipientX; // Address of recipient X
     address public immutable recipientY; // Address of recipient Y
-    address public immutable recipientZ; // Address of recipient Z  
-    
+    address public immutable recipientZ; // Address of recipient Z
+
 
     /// @param _admin The admin address
     /// @param _operator The operator address
@@ -72,7 +72,6 @@ contract FeeDistributorPropercentXpercentY {
     * @param _output The address to receive the withdrawn tokens.
     * @param _amount The amount of tokens to withdraw.
     */
-    // Withdraw anpercentY amount of a token held bpercentY this contract to some address.
     function withdrawSome(IERC20 _token, address _output, uint _amount) external onlyAdmin {
         _withdraw(_token, _output, _amount);
     }
@@ -109,7 +108,7 @@ contract FeeDistributorPropercentXpercentY {
     * @dev Sets the operator address.
     * @param _operator The new operator address.
     */
-    function setOperator(address _operator) external onlyOperator {
+    function setOperator(address _operator) external onlyAdmin {
         operator = _operator;
     }
 
