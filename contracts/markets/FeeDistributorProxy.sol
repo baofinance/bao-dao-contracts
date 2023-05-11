@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 
-import "./SafeMath.sol";
 import "./IERC20.sol";
 
 pragma solidity 0.8.19;
@@ -9,20 +8,20 @@ error InvalidPercentages();
 error AddressZero();
 error NotEnoughFunds();
 
-contract FeeDistributorPropercentXpercentY {
+contract FeeDistributorProxy {
 
     address public admin; // Address of the admin
     address public operator; // Address of the operator
 
-    uint64 public percentX; // Percentage of funds to distribute to address X
-    uint64 public percentY; // Percentage of funds to distribute to address Y
-    uint64 public percentZ; // Percentage of funds to distribute to address Z
+    uint public percentX; // Percentage of funds to distribute to address X
+    uint public percentY; // Percentage of funds to distribute to address Y
+    uint public percentZ; // Percentage of funds to distribute to address Z
 
     IERC20 public token; // The token to be distributed
 
-    address public immutable recipientX; // Address of recipient X
-    address public immutable recipientY; // Address of recipient Y
-    address public immutable recipientZ; // Address of recipient Z
+    address public immutable recipientX = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266; // Address of recipient X
+    address public immutable recipientY = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // Address of recipient Y
+    address public immutable recipientZ = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC; // Address of recipient Z
 
 
     /// @param _admin The admin address
@@ -33,11 +32,11 @@ contract FeeDistributorPropercentXpercentY {
     /// @param _percentZ The percentage of funds to distribute to address Z
     constructor(address _admin, address _operator, IERC20 _token, uint _percentX, uint _percentY, uint _percentZ) public {
         // ensure percentages do not exceed 100%
-        if ((_percentX + _percentY + _percentZ) == 1_000_000_000_000_000_000) {
+        if ((_percentX + _percentY + _percentZ) != 1_000_000_000_000_000_000) {
             revert InvalidPercentages();
         }
 
-        if (admin == address(0) || address(_token) == address(0) || _operator == address(0)){
+        if (_admin == address(0) || address(_token) == address(0) || _operator == address(0)){
             revert AddressZero();
         }
 
@@ -53,7 +52,7 @@ contract FeeDistributorPropercentXpercentY {
     /**
     * @dev Require that the caller is the admin.
     */
-    modifier onlyAdmin(){
+    modifier onlyAdmin() {
         require(msg.sender == admin, "only admin");
         _;
     }
@@ -61,7 +60,7 @@ contract FeeDistributorPropercentXpercentY {
     /**
     * @dev Require that the caller is the operator.
     */
-    modifier onlyOperator(){
+    modifier onlyOperator() {
         require(msg.sender == operator, "only operator");
         _;
     }
@@ -118,7 +117,7 @@ contract FeeDistributorPropercentXpercentY {
     * @param _percentY The percentage of funds to distribute to address Y.
     * @param _percentZ The percentage of funds to distribute to address Z.
     */
-    function setPercentamounts(uint _percentX, uint _percentY, uint _percentZ) external onlyAdmin {
+    function setPercentAmounts(uint _percentX, uint _percentY, uint _percentZ) external onlyAdmin {
         // ensure percentages do not exceed 100%
         if ((_percentX + _percentY + _percentZ) != 1_000_000_000_000_000_000) {
             revert InvalidPercentages();
